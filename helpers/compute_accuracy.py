@@ -15,8 +15,6 @@ class EvaluatePerformance(object):
         t_labels = true_labels.astype(np.int64)
         p_labels = predicted_labels
 
-        print("Type of p_labels: {}".format(type(p_labels)))
-        print("Values in p_labels: {}".format(p_labels))
         result = max(p_labels.max(), t_labels.max()) + 1
         evaluation_grid = np.zeros((result, result), dtype=np.int64)
         for size in range(p_labels.size):
@@ -44,8 +42,8 @@ class ComputeAccuracyCallback(Callback):
                                  self.ae_model.get_layer(
                                      "ae_encoder_{}".format((int(len(self.ae_model.layers) / 2) - 1))).output)
             latent_representation = latent_model.predict(self.data)
-            kmeans = KMeans(n_clusters=len(np.unique(self.labels)), n_init=20)
-            labels_predicted = kmeans.fit(latent_representation)
+            kmeans = KMeans(n_clusters=len(np.unique(self.labels)), n_init=20, n_jobs=5)
+            labels_predicted = kmeans.fit_predict(latent_representation)
 
             print("{}> Accuracy: {:.5f}, NMI: {:.5f}".format("=" * 10, EvaluatePerformance.accuracy(self.labels,
                                                                                                     labels_predicted),

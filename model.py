@@ -132,7 +132,6 @@ class ClusteringNetwork(object):
         if labels is not None:
             custom_callback.append(ComputeAccuracyCallback(data=data, labels=labels, model=self.model))
 
-        print("Value of train_steps: {}".format(train_steps))
         self.auto_encoder.fit(data, data, batch_size=batch_size, epochs=train_steps, callbacks=custom_callback)
         self.auto_encoder.save_weights(ae_model)
         self.trained_auto_encoder = True
@@ -163,7 +162,6 @@ class ClusteringNetwork(object):
         print("Initializing the default centers for each cluster")
         kmeans = KMeans(n_clusters=self.num_clusters, n_init=20)
         p_labels = kmeans.fit_predict(self.encoder.predict(data))
-        print("p_labels: {}".format(p_labels))
         previous_p_labels = np.copy(p_labels)
         self.model.get_layer(name="custom_clusters").set_weights([kmeans.cluster_centers_])
 
@@ -184,8 +182,6 @@ class ClusteringNetwork(object):
                 soft_label_dist = EvaluatePerformance.soft_labels_target_dist(soft_labels=soft_labels)
 
                 p_labels = soft_labels.argmax(1)
-
-                print("Values in p_labels in model.py: {}".format(p_labels))
 
                 if labels is not None:
                     accuracy = np.round(EvaluatePerformance.accuracy(labels, p_labels), 5)
