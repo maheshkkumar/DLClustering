@@ -9,7 +9,7 @@ from helpers.compute_accuracy import EvaluatePerformance
 from helpers.dataset import load_data
 from model import ClusteringNetwork
 
-# Dataset parameters required for training the clustering network
+# dataset specific training parameters
 dataset_parameters = {
     'mnist': {
         'interval_updation': 150,
@@ -32,8 +32,18 @@ dataset_parameters = {
 }
 
 
-# Method to training the clustering network
 def train(args):
+    """This method trains the clustering network from scratch if there is no pre-trained auto-encoder, else it will load
+    the existing pre-trained auto-encoder to retrieve the latent representation of the images to train the final
+    clustering layer in the convolutional neural network.
+
+    Args:
+        param1 (args): Command line parameters from argparse
+
+    Returns:
+        None
+
+    """
     dataset = args.dataset
     train_input, train_labels = load_data(dataset, mode='train')
     num_clusters = len(np.unique(train_labels))
@@ -45,7 +55,7 @@ def train(args):
     dimensions = [train_input.shape[-1], 500, 500, 2000, len(np.unique(train_labels))]
 
     model = ClusteringNetwork(dimensions=dimensions, temperature=temperature, data_initialization=data_initialization,
-                              num_clusters=num_clusters)
+                              num_clusters=num_clusters, output_directory=args.output_directory)
 
     if args.ae_weights:
         model.auto_encoder.load_weights(args.ae_weights)

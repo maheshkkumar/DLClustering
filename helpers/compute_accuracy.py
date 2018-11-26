@@ -1,7 +1,7 @@
 import numpy as np
 from keras.callbacks import Callback
 from keras.models import Model
-from sklearn.cluster import MiniBatchKMeans
+from sklearn.cluster import KMeans
 from sklearn.metrics import normalized_mutual_info_score
 from sklearn.utils.linear_assignment_ import linear_assignment
 
@@ -13,8 +13,10 @@ class EvaluatePerformance(object):
     @staticmethod
     def accuracy(true_labels, predicted_labels):
         t_labels = true_labels.astype(np.int64)
-        p_labels = predicted_labels.astype(np.int64)
+        p_labels = predicted_labels
 
+        print("Type of p_labels: {}".format(type(p_labels)))
+        print("Values in p_labels: {}".format(p_labels))
         result = max(p_labels.max(), t_labels.max()) + 1
         evaluation_grid = np.zeros((result, result), dtype=np.int64)
         for size in range(p_labels.size):
@@ -38,11 +40,11 @@ class ComputeAccuracyCallback(Callback):
 
     def on_epoch_end(self, epoch, logging=None):
         if epoch % 10 == 0:
-            latent_model = Model(self.ae_model.data,
+            latent_model = Model(self.ae_model.input,
                                  self.ae_model.get_layer(
                                      "ae_encoder_{}".format((int(len(self.ae_model.layers) / 2) - 1))).output)
             latent_representation = latent_model.predict(self.data)
-            kmeans = MiniBatchKMeans(n_clusters=len(np.unique(self.labels)), n_init=20)
+            kmeans = KMeans(n_clusters=len(np.unique(self.labels)), n_init=20)
             labels_predicted = kmeans.fit(latent_representation)
 
             print("{}> Accuracy: {:.5f}, NMI: {:.5f}".format("=" * 10, EvaluatePerformance.accuracy(self.labels,

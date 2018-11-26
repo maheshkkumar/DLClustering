@@ -8,7 +8,7 @@ from keras import callbacks
 from keras.engine.topology import Layer, InputSpec
 from keras.layers import Dense, Input
 from keras.models import Model
-from sklearn.cluster import MiniBatchKMeans
+from sklearn.cluster import KMeans
 from sklearn.metrics import normalized_mutual_info_score, adjusted_rand_score
 
 from helpers.compute_accuracy import ComputeAccuracyCallback
@@ -110,28 +110,31 @@ class ClusteringNetwork(object):
         self.auto_encoder, self.encoder = AutoEncoder().ae(self.dimensions)
         self.custom_cluster = CustomCluster(self.num_clusters, name="custom_clusters")(self.encoder.output)
         self.model = Model(inputs=self.encoder.input, outputs=self.custom_cluster)
+        self.output_directory = kwargs['output_directory']
+        self.results_directory = os.path.join(self.output_directory, datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+
+        check_directory(self.results_directory)
 
     def train_auto_encoder(self, data, labels=None, loss='mse', optimizer='adam', train_steps=200, batch_size=256,
                            output_directory="./results/ae"):
 
-        output_directory = os.path.join(output_directory, datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
-        check_directory(output_directory)
-
-        output_model = os.path.join(output_directory, 'auto_encoder.h5')
-        output_logger = os.path.join(output_directory, 'auto_encoder.log')
+        ae_path = os.path.join(self.results_directory, 'auto_encoder')
+        check_directory(ae_path)
+        ae_model = os.path.join(ae_path, 'auto_encoder.h5')
+        ae_logger = os.path.join(ae_path, 'auto_encoder.csv')
 
         print("Training AutoEncoder")
         self.auto_encoder.compile(optimizer=optimizer, loss=loss)
 
-        output_logging = callbacks.CSVLogger(output_logger)
+        output_logging = callbacks.CSVLogger(ae_logger, separator=',')
         custom_callback = [output_logging]
 
         if labels is not None:
             custom_callback.append(ComputeAccuracyCallback(data=data, labels=labels, model=self.model))
 
         print("Value of train_steps: {}".format(train_steps))
-        self.auto_encoder.fit(data, data, batch_size=batch_size, epochs=train_steps)
-        self.auto_encoder.save_weights(output_model)
+        self.auto_encoder.fit(data, data, batch_size=batch_size, epochs=train_steps, callbacks=custom_callback)
+        self.auto_encoder.save_weights(ae_model)
         self.trained_auto_encoder = True
 
     def load_weights(self, weights):
@@ -149,18 +152,18 @@ class ClusteringNetwork(object):
     def train_cluster_network(self, data, labels=None, iterations=15000, batch_size=256, tolerance_threshold=1e-3,
                               interval_updation=100, output_directory="./result/custom_cluster"):
 
-        output_directory = os.path.join(output_directory, datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
-        check_directory(output_directory)
-
-        log_file = os.path.join(output_directory, 'result.csv')
+        cluster_path = os.path.join(self.results_directory, 'clustering')
+        check_directory(cluster_path)
+        log_file = os.path.join(cluster_path, 'result.csv')
 
         print("Interval Updation: {}".format(interval_updation))
         interval_limit = int(data.shape[0] / batch_size) * 5
         print("Saving interval: {}".format(interval_limit))
 
         print("Initializing the default centers for each cluster")
-        kmeans = MiniBatchKMeans(n_clusters=self.num_clusters, n_init=20)
+        kmeans = KMeans(n_clusters=self.num_clusters, n_init=20)
         p_labels = kmeans.fit_predict(self.encoder.predict(data))
+        print("p_labels: {}".format(p_labels))
         previous_p_labels = np.copy(p_labels)
         self.model.get_layer(name="custom_clusters").set_weights([kmeans.cluster_centers_])
 
@@ -174,15 +177,15 @@ class ClusteringNetwork(object):
 
         for iteration in range(iterations):
 
-            model_path = os.path.join(output_directory, "model_{}.h5".format(iteration))
-
-            check_directory(model_path)
+            model_path = os.path.join(cluster_path, "model_{}.h5".format(iteration))
 
             if iteration % interval_updation == 0:
                 soft_labels = self.model.predict(data)
                 soft_label_dist = EvaluatePerformance.soft_labels_target_dist(soft_labels=soft_labels)
 
                 p_labels = soft_labels.argmax(1)
+
+                print("Values in p_labels in model.py: {}".format(p_labels))
 
                 if labels is not None:
                     accuracy = np.round(EvaluatePerformance.accuracy(labels, p_labels), 5)
