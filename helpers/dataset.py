@@ -30,6 +30,9 @@ def vgg16_features(data):
 
 
 def load_data(dataset):
+    """
+    A method to load the dataset for training
+    """
     if dataset == 'mnist':
         (train_input, train_labels), (test_input, test_labels) = mnist.load_data()
         data_input = np.concatenate((train_input, test_input))
