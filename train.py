@@ -57,7 +57,7 @@ def train(args):
     interval_updation = dataset_parameters[dataset][
         'interval_updation'] if args.interval_updation is None else args.interval_updation
     temperature = 1.
-    dimensions = [train_input.shape[-1], 500, 500, 2000, len(np.unique(train_labels))]
+    dimensions = [train_input.shape[-1], 500, 500, 2000, len(np.unique(train_labels))] if args.include_layer is None else [train_input.shape[-1], 500, 500, 2000, args.include_layer, len(np.unique(train_labels))]
 
     model = ClusteringNetwork(dimensions=dimensions, temperature=temperature, data_initialization=data_initialization,
                               num_clusters=num_clusters, output_directory=args.output_directory, dataset=dataset)
@@ -77,8 +77,7 @@ def train(args):
     p_labels = model.train_cluster_network(data=train_input, labels=train_labels,
                                            tolerance_threshold=args.tolerance_threshold,
                                            iterations=args.cluster_iterations, batch_size=args.batch_size,
-                                           interval_updation=interval_updation,
-                                           output_directory=args.output_directory)
+                                           interval_updation=interval_updation)
 
     stop_time = time.time()
     print("Accuracy: {}".format(EvaluatePerformance.accuracy(train_labels, p_labels)))
@@ -88,6 +87,7 @@ def train(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
+    parser.add_argument('-il', '--include_layer', help="Include an additional layer in auto encoder", default=None, type=int)
     parser.add_argument('-d', '--dataset', help="Name of the dataset", choices=['mnist', 'fmnist', 'stl', 'cifar10'])
     parser.add_argument('-bs', '--batch_size', help="Size of each batch", default=256, type=int)
     parser.add_argument('-citer', '--cluster_iterations', help="Number of training iterations for the cluster network",
