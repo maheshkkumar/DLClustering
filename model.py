@@ -4,6 +4,7 @@ import os
 
 import keras.backend as K
 import numpy as np
+import tensorflow as tf
 from keras import callbacks
 from keras.engine.topology import Layer, InputSpec
 from keras.layers import Dense, Input
@@ -15,6 +16,11 @@ from tensorflow import set_random_seed
 from helpers.compute_accuracy import ComputeAccuracyCallback
 from helpers.compute_accuracy import EvaluatePerformance
 from helpers.utils import check_directory
+
+config = tf.ConfigProto()
+config.gpu_options.allow_growth=True
+sess = tf.Session(config=config)
+K.set_session(sess)
 
 # seeding values for reproducability
 np.random.seed(1)
@@ -216,7 +222,7 @@ class ClusteringNetwork(object):
                     print("Tolerance threshold reached, hence stopping training.")
                     model_logger.close()
 
-                    accuracy, nmi, ari = self.evaluate_model(p_labels)
+                    accuracy, nmi, ari = self.evaluate_model(labels, p_labels)
                     print("Evaluation (test) results - Accuracy: {}, NMI: {}, ARI: {}".format(accuracy, nmi, ari))
                     break
 
@@ -235,7 +241,7 @@ class ClusteringNetwork(object):
         print("Saving the final model to: {}".format(model_path))
         self.model.save_weights(model_path)
 
-        accuracy, nmi, ari = self.evaluate_model(p_labels)
+        accuracy, nmi, ari = self.evaluate_model(labels, p_labels)
         print("Evaluation (test) results - Accuracy: {}, NMI: {}, ARI: {}".format(accuracy, nmi, ari))
 
         return p_labels
