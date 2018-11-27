@@ -44,7 +44,7 @@ def load_data(dataset):
 
     elif dataset == 'fmnist':
         (train_input, train_labels), (test_input, test_labels) = fashion_mnist.load_data()
-        data_input = np.concatenate(train_input, test_input)
+        data_input = np.concatenate((train_input, test_input))
         data_labels = np.concatenate((train_labels, test_labels))
         data = data_input.reshape((data_input.shape[0], -1))
         data = np.divide(data, 255.)
