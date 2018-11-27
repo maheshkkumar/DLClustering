@@ -42,7 +42,7 @@ def load_data(dataset):
     elif dataset == 'fmnist':
         (train_input, train_labels), (test_input, test_labels) = fashion_mnist.load_data()
         data_input = np.concatenate(train_input, test_input)
-        data_labels = np.concatenate(train_labels, test_labels)
+        data_labels = np.concatenate((train_labels, test_labels))
         data = data_input.reshape((data_input.shape[0], -1))
         data = np.divide(data, 255.)
         print("Loading Fashion MNIST dataset: {}".format(data.shape))
@@ -50,24 +50,19 @@ def load_data(dataset):
 
     elif dataset == 'cifar10':
 
-        data_path = './data/cifar10/{}_features.npy'.format(mode)
+    #     (train_input, train_labels), (test_input, test_labels) = cifar10.load_data()
+        
+    #     if os.path.exists(data_path):
+    #         return np.load(data_path), labels
 
-        (train_input, train_labels), (test_input, test_labels) = cifar10.load_data()
-        data, labels = (train_input, train_labels) if mode is 'train' else (test_input, test_labels)
+    #     features = np.zeros((labels.shape[0], 4096))
+    #     for r in range(6):
+    #         idx = range(r * 10000, (r + 1) * 10000)
+    #         features[idx] = vgg16_features(data[idx])
 
-        labels = labels.reshape((50000,)) if mode is 'train' else labels.reshape(10000)
+    #     features = MinMaxScaler().fit_transform(features)
+    #     np.save('./data/cifar10/{}_features.npy'.format(mode))
+    #     return features, labels
 
-        if os.path.exists(data_path):
-            return np.load(data_path), labels
-
-        features = np.zeros((labels.shape[0], 4096))
-        for r in range(6):
-            idx = range(r * 10000, (r + 1) * 10000)
-            features[idx] = vgg16_features(data[idx])
-
-        features = MinMaxScaler().fit_transform(features)
-        np.save('./data/cifar10/{}_features.npy'.format(mode))
-        return features, labels
-
-    else:
+    # else:
         return None
