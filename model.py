@@ -10,10 +10,15 @@ from keras.layers import Dense, Input
 from keras.models import Model
 from sklearn.cluster import KMeans
 from sklearn.metrics import normalized_mutual_info_score, adjusted_rand_score
+from tensorflow import set_random_seed
 
 from helpers.compute_accuracy import ComputeAccuracyCallback
 from helpers.compute_accuracy import EvaluatePerformance
 from helpers.utils import check_directory
+
+# seeding values for reproducability
+np.random.seed(1)
+set_random_seed(1)
 
 
 class AutoEncoder():
@@ -101,6 +106,7 @@ class ClusteringNetwork(object):
     def __init__(self, **kwargs):
         super(ClusteringNetwork, self).__init__()
 
+        self.dataset = kwargs['dataset']
         self.dimensions = kwargs['dimensions']
         self.input_dimension = self.dimensions[0]
         self.layers = len(self.dimensions) - 1
@@ -111,17 +117,18 @@ class ClusteringNetwork(object):
         self.custom_cluster = CustomCluster(self.num_clusters, name="custom_clusters")(self.encoder.output)
         self.model = Model(inputs=self.encoder.input, outputs=self.custom_cluster)
         self.output_directory = kwargs['output_directory']
-        self.results_directory = os.path.join(self.output_directory, datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
-
-        check_directory(self.results_directory)
+        self.results_directory = os.path.join(self.output_directory,
+                                              datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
     def train_auto_encoder(self, data, labels=None, loss='mse', optimizer='adam', train_steps=200, batch_size=256,
                            output_directory="./results/ae"):
 
+        check_directory(self.results_directory)
+
         ae_path = os.path.join(self.results_directory, 'auto_encoder')
         check_directory(ae_path)
-        ae_model = os.path.join(ae_path, 'auto_encoder.h5')
-        ae_logger = os.path.join(ae_path, 'auto_encoder.csv')
+        ae_model = os.path.join(ae_path, '{}_ae.h5'.format(self.dataset))
+        ae_logger = os.path.join(ae_path, '{}_ae.h5'.format(self.dataset))
 
         print("Training AutoEncoder")
         self.auto_encoder.compile(optimizer=optimizer, loss=loss)
@@ -148,9 +155,18 @@ class ClusteringNetwork(object):
     def comile(self, loss='kld', optimizer='sgd'):
         self.model.compile(optimizer=optimizer, loss=loss)
 
-    def train_cluster_network(self, data, labels=None, iterations=15000, batch_size=256, tolerance_threshold=1e-3,
-                              interval_updation=100, output_directory="./result/custom_cluster"):
+    def evaluate_model(self, labels, p_labels):
 
+        accuracy = np.round(EvaluatePerformance.accuracy(labels, p_labels), 3)
+        nmi = np.round(normalized_mutual_info_score(labels, p_labels), 3)
+        ari = np.round(adjusted_rand_score(labels, p_labels), 3)
+
+        return accuracy, nmi, ari
+
+    def train_cluster_network(self, data, labels=None, iterations=15000, batch_size=256, tolerance_threshold=1e-3,
+                              interval_updation=100):
+
+        check_directory(self.results_directory)
         cluster_path = os.path.join(self.results_directory, 'clustering')
         check_directory(cluster_path)
         log_file = os.path.join(cluster_path, 'result.csv')
@@ -175,7 +191,7 @@ class ClusteringNetwork(object):
 
         for iteration in range(iterations):
 
-            model_path = os.path.join(cluster_path, "model_{}.h5".format(iteration))
+            model_path = os.path.join(cluster_path, "{}_{}.h5".format(self.dataset, iteration))
 
             if iteration % interval_updation == 0:
                 soft_labels = self.model.predict(data)
@@ -184,14 +200,12 @@ class ClusteringNetwork(object):
                 p_labels = soft_labels.argmax(1)
 
                 if labels is not None:
-                    accuracy = np.round(EvaluatePerformance.accuracy(labels, p_labels), 5)
-                    nmi = np.round(normalized_mutual_info_score(labels, p_labels), 5)
-                    ari = np.round(adjusted_rand_score(labels, p_labels), 5)
-                    loss = np.round(loss, 5)
+                    accuracy, nmi, ari = self.evaluate_model(labels, p_labels)
+                    loss = np.round(loss, 3)
                     metrics = dict(Iteration=iteration, Accuracy=accuracy, NMI=ari, ARI=ari, Loss=loss)
                     log_writer.writerow(metrics)
                     print(
-                        "Iteration: {:.5f}, Accuracy: {:.5f}, NMI: {:.5f}, ARI: {:.5f}".format(iteration, accuracy, nmi,
+                        "Iteration: {}, Accuracy: {:.3f}, NMI: {:.3f}, ARI: {:.3f}".format(iteration, accuracy, nmi,
                                                                                                ari))
 
                 tolerance = np.sum(p_labels != previous_p_labels).astype(np.float32) / p_labels.shape[0]
@@ -201,6 +215,9 @@ class ClusteringNetwork(object):
                     print("Current tolerance value: {}, Tolerance threshold: {}".format(tolerance, tolerance_threshold))
                     print("Tolerance threshold reached, hence stopping training.")
                     model_logger.close()
+
+                    accuracy, nmi, ari = self.evaluate_model(p_labels)
+                    print("Evaluation (test) results - Accuracy: {}, NMI: {}, ARI: {}".format(accuracy, nmi, ari))
                     break
 
             # training the model
@@ -217,5 +234,8 @@ class ClusteringNetwork(object):
         model_logger.close()
         print("Saving the final model to: {}".format(model_path))
         self.model.save_weights(model_path)
+
+        accuracy, nmi, ari = self.evaluate_model(p_labels)
+        print("Evaluation (test) results - Accuracy: {}, NMI: {}, ARI: {}".format(accuracy, nmi, ari))
 
         return p_labels

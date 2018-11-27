@@ -4,10 +4,15 @@ import time
 import numpy as np
 from keras.initializers import VarianceScaling
 from keras.optimizers import SGD
+from tensorflow import set_random_seed
 
 from helpers.compute_accuracy import EvaluatePerformance
 from helpers.dataset import load_data
 from model import ClusteringNetwork
+
+# seeding values for reproducability
+np.random.seed(1)
+set_random_seed(1)
 
 # dataset specific training parameters
 dataset_parameters = {
@@ -45,7 +50,7 @@ def train(args):
 
     """
     dataset = args.dataset
-    train_input, train_labels = load_data(dataset, mode='train')
+    train_input, train_labels = load_data(dataset)
     num_clusters = len(np.unique(train_labels))
     data_initialization = dataset_parameters[dataset]['data_initialization']
     auto_encoder_optimzer = dataset_parameters[dataset]['optimizer']
@@ -55,7 +60,7 @@ def train(args):
     dimensions = [train_input.shape[-1], 500, 500, 2000, len(np.unique(train_labels))]
 
     model = ClusteringNetwork(dimensions=dimensions, temperature=temperature, data_initialization=data_initialization,
-                              num_clusters=num_clusters, output_directory=args.output_directory)
+                              num_clusters=num_clusters, output_directory=args.output_directory, dataset=dataset)
 
     if args.ae_weights:
         model.auto_encoder.load_weights(args.ae_weights)
@@ -100,3 +105,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     train(args)
+

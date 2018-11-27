@@ -4,7 +4,11 @@ from keras.models import Model
 from sklearn.cluster import KMeans
 from sklearn.metrics import normalized_mutual_info_score
 from sklearn.utils.linear_assignment_ import linear_assignment
+from tensorflow import set_random_seed
 
+# seeding values for reproducability
+np.random.seed(1)
+set_random_seed(1)
 
 class EvaluatePerformance(object):
     def __init__(self):

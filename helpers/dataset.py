@@ -6,40 +6,47 @@ from keras.datasets import mnist, fashion_mnist, cifar10
 from keras.models import Model
 from keras.preprocessing.image import img_to_array, array_to_img
 from sklearn.preprocessing import MinMaxScaler
+from tensorflow import set_random_seed
+
+# seeding values for reproducability
+np.random.seed(1)
+set_random_seed(1)
+
 
 def preprocess_image(img):
     img = array_to_img(img, scale=False).resize((224, 224))
     img = img_to_array(img)
     return img
 
+
 def vgg16_features(data):
-        model = VGG16(include_top=True, weights='imagenet', input_shape=(224, 224, 3))
-        features_model = Model(model.input, model.get_layer('fc1').output)
-        data = np.asarray([preprocess_image(image) for image in data])
-        data = preprocess_input(data)
-        features = features_model.predict(data)
+    model = VGG16(include_top=True, weights='imagenet', input_shape=(224, 224, 3))
+    features_model = Model(model.input, model.get_layer('fc1').output)
+    data = np.asarray([preprocess_image(image) for image in data])
+    data = preprocess_input(data)
+    features = features_model.predict(data)
 
-        return features
+    return features
 
-def load_data(dataset, mode='train'):
+
+def load_data(dataset):
     if dataset == 'mnist':
         (train_input, train_labels), (test_input, test_labels) = mnist.load_data()
-        data, labels = (train_input, train_labels) if mode is 'train' else (test_input, test_labels)
-
-        data = data.reshape((data.shape[0], -1))
+        data_input = np.concatenate((train_input, test_input))
+        data_labels = np.concatenate((train_labels, test_labels))
+        data = data_input.reshape((data_input.shape[0], -1))
         data = np.divide(data, 255.)
         print("Loading MNIST dataset: {}".format(data.shape))
-        return data, labels
+        return data, data_labels
 
     elif dataset == 'fmnist':
         (train_input, train_labels), (test_input, test_labels) = fashion_mnist.load_data()
-        data, labels = (train_input, train_labels) if mode is 'train' else (test_input, test_labels)
-
-        data = data.reshape((data.shape[0], -1))
+        data_input = np.concatenate(train_input, test_input)
+        data_labels = np.concatenate(train_labels, test_labels)
+        data = data_input.reshape((data_input.shape[0], -1))
         data = np.divide(data, 255.)
-
         print("Loading Fashion MNIST dataset: {}".format(data.shape))
-        return data, labels
+        return data, data_labels
 
     elif dataset == 'cifar10':
 
