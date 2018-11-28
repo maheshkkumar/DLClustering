@@ -7,7 +7,7 @@ import numpy as np
 import tensorflow as tf
 from keras import callbacks
 from keras.engine.topology import Layer, InputSpec
-from keras.layers import Dense, Input
+from keras.layers import Dense, Input, multiply
 from keras.models import Model
 from sklearn.cluster import KMeans
 from sklearn.metrics import normalized_mutual_info_score, adjusted_rand_score
@@ -52,6 +52,9 @@ class AutoEncoder():
         # latent representation of auto encoder
         latent_representation = Dense(layers[-1], kernel_initializer=self.data_initialization,
                                       name="ae_encoder{}".format(num_of_layers - 1))(latent_representation)
+
+        attention_probs = Dense(layers[-1], activation='softmax', name='attention_vec')( latent_representation)
+        latent_representation = multiply([latent_representation, attention_probs])
 
         # decoder sub-network
         decoder_representation = latent_representation
