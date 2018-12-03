@@ -104,7 +104,10 @@ venv.bak/
 .mypy_cache/
 
 # results
-/results
+results/
 
 # pycharm 
 .idea
+
+# vscode
+.vscode

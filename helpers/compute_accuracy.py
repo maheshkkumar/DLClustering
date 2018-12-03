@@ -10,6 +10,7 @@ from tensorflow import set_random_seed
 np.random.seed(1)
 set_random_seed(1)
 
+
 class EvaluatePerformance(object):
     def __init__(self):
         pass
@@ -24,7 +25,7 @@ class EvaluatePerformance(object):
         for size in range(p_labels.size):
             evaluation_grid[p_labels[size], t_labels[size]] += 1
         indices = linear_assignment(evaluation_grid.max() - evaluation_grid)
-        return (sum([evaluation_grid[i, j] for i, j in indices]) * 1.0 / p_labels.size)
+        return sum([evaluation_grid[i, j] for i, j in indices]) * 1.0 / p_labels.size
 
     @staticmethod
     def soft_labels_target_dist(soft_labels):
@@ -33,23 +34,22 @@ class EvaluatePerformance(object):
 
 
 class ComputeAccuracyCallback(Callback):
-    def __init__(self, data, labels, model):
+    def __init__(self, data, labels, model, mode='ae'):
         self.data = data
         self.labels = labels
         self.ae_model = model
+        self.mode = mode
 
         super(ComputeAccuracyCallback, self).__init__()
 
     def on_epoch_end(self, epoch, logging=None):
         if epoch % 10 == 0:
-            latent_model = Model(self.ae_model.input,
-                                 self.ae_model.get_layer(
-                                     "ae_encoder_{}".format((int(len(self.ae_model.layers) / 2) - 1))).output)
+            latent_model = Model(self.ae_model.input, self.ae_model.get_layer("latent_vector").output)
             latent_representation = latent_model.predict(self.data)
             kmeans = KMeans(n_clusters=len(np.unique(self.labels)), n_init=20, n_jobs=5)
             labels_predicted = kmeans.fit_predict(latent_representation)
 
-            print("{}> Accuracy: {:.5f}, NMI: {:.5f}".format("=" * 10, EvaluatePerformance.accuracy(self.labels,
-                                                                                                    labels_predicted),
+            print("\nAccuracy: {:.5f}, NMI: {:.5f}\n".format(EvaluatePerformance.accuracy(self.labels,
+                                                                                          labels_predicted),
                                                              normalized_mutual_info_score(self.labels,
                                                                                           labels_predicted)))

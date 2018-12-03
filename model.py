@@ -7,7 +7,7 @@ import numpy as np
 import tensorflow as tf
 from keras import callbacks
 from keras.engine.topology import Layer, InputSpec
-from keras.layers import Dense, Input, multiply
+from keras.layers import Dense, Input, Conv2D, Flatten, Reshape, Conv2DTranspose, Activation, multiply
 from keras.models import Model
 from sklearn.cluster import KMeans
 from sklearn.metrics import normalized_mutual_info_score, adjusted_rand_score
@@ -18,13 +18,79 @@ from helpers.compute_accuracy import EvaluatePerformance
 from helpers.utils import check_directory
 
 config = tf.ConfigProto()
-config.gpu_options.allow_growth=True
+config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
 K.set_session(sess)
 
 # seeding values for reproducability
 np.random.seed(1)
 set_random_seed(1)
+
+
+class DAE():
+    def __init__(self):
+        self.data_initialization = 'glorot_uniform'
+
+    def ae(self, input_shape, latent_dimension, kernel_size, layers, activation='relu', with_attention=False):
+
+        print("Layers: {}".format(layers))
+
+        initial_representation = Input(shape=input_shape, name='encoder_input')
+        latent_representation = initial_representation
+
+        # encoder sub-network
+        for filters in layers:
+            latent_representation = Conv2D(filters=filters,
+                                           kernel_size=kernel_size,
+                                           strides=2,
+                                           activation=activation,
+                                           padding='same')(latent_representation)
+
+        # Shape info needed to build Decoder Model
+        shape = K.int_shape(latent_representation)
+
+        # Generate the latent vector
+        latent_representation = Flatten()(latent_representation)
+        latent_representation = Dense(latent_dimension, name='latent_vector')(latent_representation)
+
+        if with_attention:
+            print("Adding attention for training")
+            # adding attention for extracting relevant features
+            attention_probs = Dense(latent_dimension, activation='softmax', name='attention_vec')(latent_representation)
+            latent_representation = multiply([latent_representation, attention_probs])
+
+        # Instantiate Encoder Model
+        encoder = Model(initial_representation, latent_representation, name='encoder')
+        encoder.summary()
+
+        # Build the Decoder Model
+        decoder_initial_representation = Input(shape=(latent_dimension,), name='decoder_input')
+        decoder_representation = Dense(shape[1] * shape[2] * shape[3])(decoder_initial_representation)
+        decoder_representation = Reshape((shape[1], shape[2], shape[3]))(decoder_representation)
+
+        for filters in layers[::-1]:
+            decoder_representation = Conv2DTranspose(filters=filters,
+                                                     kernel_size=kernel_size,
+                                                     strides=2,
+                                                     activation=activation,
+                                                     padding='same')(decoder_representation)
+
+        decoder_representation = Conv2DTranspose(filters=1,
+                                                 kernel_size=kernel_size,
+                                                 padding='same')(decoder_representation)
+
+        dae_output = Activation('sigmoid', name='decoder_output')(decoder_representation)
+
+        # Instantiate Decoder Model
+        decoder = Model(decoder_initial_representation, dae_output, name='decoder')
+        decoder.summary()
+
+        # Autoencoder = Encoder + Decoder
+        # Instantiate Autoencoder Model
+        autoencoder = Model(initial_representation, decoder(encoder(initial_representation)), name='autoencoder')
+        autoencoder.summary()
+
+        return autoencoder, encoder
 
 
 class AutoEncoder():
@@ -35,7 +101,7 @@ class AutoEncoder():
     def __init__(self):
         self.data_initialization = 'glorot_uniform'
 
-    def ae(self, layers, activation='relu'):
+    def ae(self, layers, activation='relu', with_attention=False):
 
         print("Layers: {}".format(layers))
 
@@ -51,10 +117,13 @@ class AutoEncoder():
 
         # latent representation of auto encoder
         latent_representation = Dense(layers[-1], kernel_initializer=self.data_initialization,
-                                      name="ae_encoder{}".format(num_of_layers - 1))(latent_representation)
+                                      name="latent_vector")(latent_representation)
 
-        attention_probs = Dense(layers[-1], activation='softmax', name='attention_vec')( latent_representation)
-        latent_representation = multiply([latent_representation, attention_probs])
+        if with_attention:
+            print("Adding attention for training")
+            # adding attention for extracting relevant features
+            attention_probs = Dense(layers[-1], activation='softmax', name='attention_vec')(latent_representation)
+            latent_representation = multiply([latent_representation, attention_probs])
 
         # decoder sub-network
         decoder_representation = latent_representation
@@ -67,8 +136,8 @@ class AutoEncoder():
         decoder_representation = Dense(layers[0], kernel_initializer=self.data_initialization, name="ae_decoder_0")(
             decoder_representation)
 
-        return Model(inputs=initial_representation, outputs=decoder_representation, name='AutoEncoder'), Model(
-            inputs=initial_representation, outputs=latent_representation, name='Encoder')
+        return Model(inputs=initial_representation, outputs=decoder_representation, name='autoencoder'), Model(
+            inputs=initial_representation, outputs=latent_representation, name='encoder')
 
 
 class CustomCluster(Layer):
@@ -103,7 +172,7 @@ class CustomCluster(Layer):
         return soft_label
 
     def compute_output_shape(self, input_shape):
-        return (input_shape[0], self.num_clusters)
+        return input_shape[0], self.num_clusters
 
     def get_config(self):
         configuration = {'num_clusters': self.num_clusters}
@@ -117,17 +186,28 @@ class ClusteringNetwork(object):
 
         self.dataset = kwargs['dataset']
         self.dimensions = kwargs['dimensions']
-        self.input_dimension = self.dimensions[0]
         self.layers = len(self.dimensions) - 1
         self.num_clusters = kwargs['num_clusters']
         self.temperature = kwargs['temperature']
+        self.with_attention = kwargs['with_attention']
+        self.ae_mode = kwargs['ae_mode']
         self.data_initialization = kwargs['data_initialization']
-        self.auto_encoder, self.encoder = AutoEncoder().ae(self.dimensions)
-        self.custom_cluster = CustomCluster(self.num_clusters, name="custom_clusters")(self.encoder.output)
-        self.model = Model(inputs=self.encoder.input, outputs=self.custom_cluster)
         self.output_directory = kwargs['output_directory']
         self.results_directory = os.path.join(self.output_directory,
                                               datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+
+        if self.ae_mode == 'ae':
+            self.auto_encoder, self.encoder = AutoEncoder().ae(self.dimensions, with_attention=self.with_attention)
+            model_input, model_output = self.encoder.input, CustomCluster(self.num_clusters, name='custom_clusters')(
+                self.encoder.output)
+        else:
+            self.auto_encoder, self.encoder = DAE().ae(layers=self.dimensions, input_shape=(28, 28, 1), kernel_size=3,
+                                                       latent_dimension=self.num_clusters,
+                                                       with_attention=self.with_attention)
+            model_input, model_output = self.encoder.get_input_at(0), CustomCluster(self.num_clusters,
+                                                                                    name="custom_clusters")(
+                self.encoder.get_output_at(0))
+        self.model = Model(inputs=model_input, outputs=model_output)
 
     def train_auto_encoder(self, data, labels=None, loss='mse', optimizer='adam', train_steps=200, batch_size=256,
                            output_directory="./results/ae"):
@@ -146,7 +226,8 @@ class ClusteringNetwork(object):
         custom_callback = [output_logging]
 
         if labels is not None:
-            custom_callback.append(ComputeAccuracyCallback(data=data, labels=labels, model=self.model))
+            custom_callback.append(
+                ComputeAccuracyCallback(data=data, labels=labels, model=self.model, mode=self.ae_mode))
 
         self.auto_encoder.fit(data, data, batch_size=batch_size, epochs=train_steps, callbacks=custom_callback)
         self.auto_encoder.save_weights(ae_model)
@@ -161,7 +242,7 @@ class ClusteringNetwork(object):
     def predict(self, data):
         return self.model.predict(data, verbose=0).argmax(1)
 
-    def comile(self, loss='kld', optimizer='sgd'):
+    def compile(self, loss='kld', optimizer='sgd'):
         self.model.compile(optimizer=optimizer, loss=loss)
 
     def evaluate_model(self, labels, p_labels):
@@ -215,7 +296,7 @@ class ClusteringNetwork(object):
                     log_writer.writerow(metrics)
                     print(
                         "Iteration: {}, Accuracy: {:.3f}, NMI: {:.3f}, ARI: {:.3f}".format(iteration, accuracy, nmi,
-                                                                                               ari))
+                                                                                           ari))
 
                 tolerance = np.sum(p_labels != previous_p_labels).astype(np.float32) / p_labels.shape[0]
                 previous_p_labels = np.copy(p_labels)

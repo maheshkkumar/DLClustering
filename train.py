@@ -50,17 +50,27 @@ def train(args):
 
     """
     dataset = args.dataset
-    train_input, train_labels = load_data(dataset)
+    ae_mode = args.mode
+    train_input, train_labels = load_data(dataset, mode=ae_mode)
     num_clusters = len(np.unique(train_labels))
     data_initialization = dataset_parameters[dataset]['data_initialization']
     auto_encoder_optimzer = dataset_parameters[dataset]['optimizer']
+    with_attention = args.attention
     interval_updation = dataset_parameters[dataset][
         'interval_updation'] if args.interval_updation is None else args.interval_updation
     temperature = 1.
-    dimensions = [train_input.shape[-1], 500, 500, 2000, len(np.unique(train_labels))] if args.include_layer is None else [train_input.shape[-1], 500, 500, 2000, args.include_layer, len(np.unique(train_labels))]
+
+    if ae_mode == "ae":
+        dimensions = [train_input.shape[-1], 500, 500, 2000,
+                      len(np.unique(train_labels))] if args.include_layer is None else [train_input.shape[-1], 500, 500,
+                                                                                        2000, args.include_layer,
+                                                                                        len(np.unique(train_labels))]
+    else:
+        dimensions = [32, 64]
 
     model = ClusteringNetwork(dimensions=dimensions, temperature=temperature, data_initialization=data_initialization,
-                              num_clusters=num_clusters, output_directory=args.output_directory, dataset=dataset)
+                              num_clusters=num_clusters, output_directory=args.output_directory, dataset=dataset,
+                              ae_mode=ae_mode, with_attention=with_attention)
 
     if args.ae_weights:
         model.auto_encoder.load_weights(args.ae_weights)
@@ -73,7 +83,7 @@ def train(args):
 
     start_time = time.time()
 
-    model.comile(optimizer=SGD(0.01, 0.9), loss='kld')
+    model.compile(optimizer=SGD(0.01, 0.9), loss='kld')
     p_labels = model.train_cluster_network(data=train_input, labels=train_labels,
                                            tolerance_threshold=args.tolerance_threshold,
                                            iterations=args.cluster_iterations, batch_size=args.batch_size,
@@ -87,9 +97,12 @@ def train(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-il', '--include_layer', help="Include an additional layer in auto encoder", default=None, type=int)
+    parser.add_argument('-il', '--include_layer', help="Include an additional layer in auto encoder", default=None,
+                        type=int)
     parser.add_argument('-d', '--dataset', help="Name of the dataset", choices=['mnist', 'fmnist', 'stl', 'cifar10'])
     parser.add_argument('-bs', '--batch_size', help="Size of each batch", default=256, type=int)
+    parser.add_argument('-att', '--attention', help="Attention for training", default=False, type=bool)
+    parser.add_argument('-m', '--mode', help="Type of auto encoder model", choices=["ae", "dae"])
     parser.add_argument('-citer', '--cluster_iterations', help="Number of training iterations for the cluster network",
                         default=15000, type=int)
     parser.add_argument('-aiter', '--ae_iterations', help="Number of training iterations for auto encoder",
@@ -105,4 +118,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     train(args)
-
