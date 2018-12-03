@@ -2,7 +2,7 @@ import argparse
 import time
 
 import numpy as np
-from keras.initializers import VarianceScaling
+from keras.initializers import VarianceScaling, glorot_uniform
 from keras.optimizers import SGD
 from tensorflow import set_random_seed
 
@@ -19,19 +19,19 @@ dataset_parameters = {
     'mnist': {
         'interval_updation': 150,
         'training_steps': 300,
-        'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform'),
+        'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform', seed=1),
         'optimizer': SGD(lr=1, momentum=0.9)
     },
     'fmnist': {
         'interval_updation': 150,
         'training_steps': 300,
-        'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform'),
+        'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform', seed=1),
         'optimizer': SGD(lr=1, momentum=0.9)
     },
     'stl': {
         'interval_updation': 30,
         'training_steps': 10,
-        'data_initialization': 'glorot_uniform',
+        'data_initialization': glorot_uniform(seed=1),
         'optimizer': 'adam'
     },
 }

@@ -7,6 +7,7 @@ import numpy as np
 import tensorflow as tf
 from keras import callbacks
 from keras.engine.topology import Layer, InputSpec
+from keras.initializers import glorot_uniform
 from keras.layers import Dense, Input, Conv2D, Flatten, Reshape, Conv2DTranspose, Activation, multiply
 from keras.models import Model
 from sklearn.cluster import KMeans
@@ -29,7 +30,7 @@ set_random_seed(1)
 
 class DAE():
     def __init__(self):
-        self.data_initialization = 'glorot_uniform'
+        self.data_initialization = glorot_uniform(seed=1)
 
     def ae(self, input_shape, latent_dimension, kernel_size, layers, activation='relu', with_attention=False):
 
@@ -99,7 +100,7 @@ class AutoEncoder():
     """
 
     def __init__(self):
-        self.data_initialization = 'glorot_uniform'
+        self.data_initialization = glorot_uniform(seed=1)
 
     def ae(self, layers, activation='relu', with_attention=False):
 
@@ -148,7 +149,7 @@ class CustomCluster(Layer):
     def __init__(self, num_clusters, weights=None, temperature=1.0, **kwargs):
         # Might have to implement the dimension of the input image
         super(CustomCluster, self).__init__(**kwargs)
-        self.data_initialization = 'glorot_uniform'
+        self.data_initialization = glorot_uniform(seed=1)
         self.num_clusters = num_clusters
         self.temperature = temperature
         self.custom_weights = weights
