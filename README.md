@@ -1,19 +1,50 @@
-## Introduction
+## Deep Latent Feature Unsupervised Learning
 
-A method to employ a neural network to learn the latent representation of the multimedia data (e.g., images) to better form the clusters in a lower dimensional space.
+A method to employ a neural network to learn the latent representation of the multimedia data (e.g., images) to better form the clusters in the lower dimensional space.
 
-### Steps to setup the project
+This code implements the unsupervised learning mechanism for Convolutional Neural Network (ConvNet) as described in the paper. Additionally, this repository includes the following procedures: 
+    
+  1. Training the auto-encoder.
+  2. Loading a pre-trained auto-encoder to train the `k-means` cluster in the ConvNet.
+  3. Evaluate the methods for different datasets.
+  4. Visualize the results either as a t-sne or PCA scatter plot to depict the cluster formations.
+    
 
-1. Clone the repository.
-2. Setup the `python 2.7` environment (either conda or pip)
-    1. Via `virtualenv`
+### Steps to setup the project (requirements)
+
+1. Clone or download this repository.
+2. Setup the `python 2.7` environment (either virtualenv or Anaconda distribution)
+    1. `Virtualenv`
         1. Create a new environment: `virtualenv -p ~/path/python2.7 project_name`
-    2. Via `conda`
+    2. `Conda`
         1. Create a new environment: `conda create -n python=2.7 project_name`
-3. Activate the environment: `source project_name/bin/activate`
+3. Activate the environment:
+    1. Windows: `source project_name/bin/activate`
+    2. Linux / Ubuntu: 
+        1. `source ~/.bashrc`
+        1. `source activate project_name`
 4. Install all the dependencies `pip install -r requirements.txt`
-5. Run `train.py -h` to know the additional command line parameters.
-6.     usage: train.py [-h] [-il INCLUDE_LAYER] [-d {mnist,fmnist,stl,cifar10}]
+
+### Datasets
+
+The following datasets were used for evaluating the proposed approach for deep latent feature unsupervised learning.
+
+  1. MNIST - [Download](https://www.google.com)
+  2. Fashion-MNIST - [Download](https://www.google.com)
+  3. CIFAR10 - [Download](https://www.google.com)
+  4. USPS - [Download](https://www.google.com)
+
+### Pre-trained models
+The pre-trained auto-encoder models can be downloaded from the hyperlinks displayed below:
+  1. MNIST - [Download](https://www.google.com)
+  2. Fashion-MNIST - [Download](https://www.google.com)
+  3. CIFAR10 - [Download](https://www.google.com)
+  4. USPS - [Download](https://www.google.com)
+
+### Training the auto-encoder
+1. Run `train.py -h` to know the additional command line parameters.
+
+        usage: train.py [-h] [-il INCLUDE_LAYER] [-d {mnist,fmnist,stl,cifar10}]
                 [-bs BATCH_SIZE] [-att ATTENTION] [-m {ae,dae}]
                 [-citer CLUSTER_ITERATIONS] [-aiter AE_ITERATIONS]
                 [-iu INTERVAL_UPDATION] [-tt TOLERANCE_THRESHOLD]
@@ -44,5 +75,8 @@ A method to employ a neural network to learn the latent representation of the mu
           -od OUTPUT_DIRECTORY, --output_directory OUTPUT_DIRECTORY
                                 Path of the output directory to store the results and
                                 training models
-7. Demo run: `python train.py -d mnist -att True -aiter 10 -citer 10 -aew ./ae_weights/model.h5`
-8. Generate result graphs: `python generate_results.py` 
+                                
+### Using a pre-trained auto-encoder to train the clustering
+1. Demo run: `python train.py -d mnist -att True -aiter 10 -citer 10 -aew ./ae_weights/model.h5`
+
+### Visualising the results of clustering

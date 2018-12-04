@@ -111,3 +111,9 @@ results/
 
 # vscode
 .vscode
+
+# environment
+/dlc
+
+# Junk
+datasets/.DS_Store

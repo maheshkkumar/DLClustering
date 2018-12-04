@@ -48,7 +48,6 @@ class ComputeAccuracyCallback(Callback):
             latent_representation = latent_model.predict(self.data)
             kmeans = KMeans(n_clusters=len(np.unique(self.labels)), n_init=20, n_jobs=5)
             labels_predicted = kmeans.fit_predict(latent_representation)
-            print("Shape of labels: {}".format(self.labels.shape))
             print("\nAccuracy: {:.5f}, NMI: {:.5f}\n".format(EvaluatePerformance.accuracy(self.labels,
                                                                                           labels_predicted),
                                                              normalized_mutual_info_score(self.labels,

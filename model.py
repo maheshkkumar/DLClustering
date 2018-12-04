@@ -23,7 +23,7 @@ config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
 K.set_session(sess)
 
-# seeding values for reproducability
+# seeding values for reproducibility
 np.random.seed(1)
 set_random_seed(1)
 
@@ -32,7 +32,8 @@ class DAE():
     def __init__(self):
         self.data_initialization = glorot_uniform(seed=1)
 
-    def ae(self, input_shape, latent_dimension, kernel_size, layers, activation='relu', with_attention=False, dataset='mnist'):
+    def ae(self, input_shape, latent_dimension, kernel_size, layers, activation='relu', with_attention=False,
+           dataset='mnist'):
 
         print("Layers: {}".format(layers))
 
@@ -76,7 +77,7 @@ class DAE():
                                                      activation=activation,
                                                      padding='same')(decoder_representation)
 
-        if dataset in ["mnist", "fmnist"]:
+        if dataset in ["mnist", "fmnist", "usps"]:
             decoder_representation = Conv2DTranspose(filters=1,
                                                      kernel_size=kernel_size,
                                                      padding='same')(decoder_representation)
@@ -92,7 +93,6 @@ class DAE():
         decoder.summary()
 
         # Autoencoder = Encoder + Decoder
-        # Instantiate Autoencoder Model
         autoencoder = Model(initial_representation, decoder(encoder(initial_representation)), name='autoencoder')
         autoencoder.summary()
 
@@ -201,14 +201,21 @@ class ClusteringNetwork(object):
         self.output_directory = kwargs['output_directory']
         self.results_directory = os.path.join(self.output_directory,
                                               datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
-        self.input_shape = (28, 28, 1) if self.dataset in ["mnist", "fmnist"] else [32, 32, 3]
+        self.input_shapes = {
+            'mnist': [28, 28, 1],
+            'fmnist': [28, 28, 1],
+            'cifar10': [32, 32, 1],
+            'usps': [16, 16, 1]
+        }
+        self.input_shape = self.input_shapes[self.dataset]
 
         if self.ae_mode == 'ae':
             self.auto_encoder, self.encoder = AutoEncoder().ae(self.dimensions, with_attention=self.with_attention)
             model_input, model_output = self.encoder.input, CustomCluster(self.num_clusters, name='custom_clusters')(
                 self.encoder.output)
         else:
-            self.auto_encoder, self.encoder = DAE().ae(layers=self.dimensions, input_shape=self.input_shape, kernel_size=3,
+            self.auto_encoder, self.encoder = DAE().ae(layers=self.dimensions, input_shape=self.input_shape,
+                                                       kernel_size=3,
                                                        latent_dimension=self.num_clusters,
                                                        with_attention=self.with_attention, dataset=self.dataset)
             model_input, model_output = self.encoder.get_input_at(0), CustomCluster(self.num_clusters,

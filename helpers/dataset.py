@@ -1,3 +1,4 @@
+import h5py
 import numpy as np
 from keras.applications.vgg16 import preprocess_input, VGG16
 from keras.datasets import mnist, fashion_mnist, cifar10
@@ -8,6 +9,9 @@ from tensorflow import set_random_seed
 # seeding values for reproducability
 np.random.seed(1)
 set_random_seed(1)
+
+# USPS data path
+USPS_PATH = './datasets/usps/usps.h5'
 
 
 def preprocess_image(img):
@@ -39,9 +43,9 @@ def load_data(dataset, mode='ae'):
             image_size = data_input.shape[1]
             data = np.reshape(data_input, [-1, image_size, image_size, 1])
             data = np.divide(data, 255.)
-            noise = np.random.normal(loc=0.5, scale=0.5, size=data.shape)
-            data += noise
-            data = np.clip(data, 0., 1.)
+            # noise = np.random.normal(loc=0.5, scale=0.5, size=data.shape)
+            # data += noise
+            # data = np.clip(data, 0., 1.)
         else:
             data = data_input.reshape((data_input.shape[0], -1))
             data = np.divide(data, 255.)
@@ -57,9 +61,6 @@ def load_data(dataset, mode='ae'):
             image_size = data_input.shape[1]
             data = np.reshape(data_input, [-1, image_size, image_size, 1])
             data = np.divide(data, 255.)
-            noise = np.random.normal(loc=0.5, scale=0.5, size=data.shape)
-            data += noise
-            data = np.clip(data, 0., 1.)
         else:
             data = data_input.reshape((data_input.shape[0], -1))
             data = np.divide(data, 255.)
@@ -68,35 +69,55 @@ def load_data(dataset, mode='ae'):
 
     elif dataset == 'cifar10':
 
-            (train_input, train_labels), (test_input, test_labels) = cifar10.load_data()
+        (train_input, train_labels), (test_input, test_labels) = cifar10.load_data()
+        data_input = np.concatenate((train_input, test_input))
+        data_labels = np.concatenate((train_labels, test_labels))
+
+        if mode == 'dae':
+            image_size = data_input.shape[1]
+            data = np.reshape(data_input, [-1, image_size, image_size, 3])
+            data = np.divide(data, 255.)
+        else:
+            data = data_input.reshape((data_input.shape[0], -1))
+            data = np.divide(data, 255.)
+        print("Loading CIFAR10 dataset: {}".format(data.shape))
+        return data, data_labels.reshape(-1)
+
+        # if os.path.exists(data_path):
+        #     return np.load(data_path), labels
+
+        #     features = np.zeros((labels.shape[0], 4096))
+        #     for r in range(6):
+        #         idx = range(r * 10000, (r + 1) * 10000)
+        #         features[idx] = vgg16_features(data[idx])
+
+        #     features = MinMaxScaler().fit_transform(features)
+        #     np.save('./data/cifar10/{}_features.npy'.format(mode))
+        #     return features, labels
+
+    elif dataset == 'usps':
+        with h5py.File(USPS_PATH, 'r') as hf:
+            train = hf.get('train')
+            train_input = train.get('data')[:]
+            print("Shape of train input: {}".format(train_input.shape))
+            train_labels = train.get('target')[:]
+            test = hf.get('test')
+            test_input = test.get('data')[:]
+            test_labels = test.get('target')[:]
             data_input = np.concatenate((train_input, test_input))
             data_labels = np.concatenate((train_labels, test_labels))
 
             if mode == 'dae':
-                image_size = data_input.shape[1]
-                data = np.reshape(data_input, [-1, image_size, image_size, 3])
+                print("Shape of USPS dataset: {}".format(data_input.shape))
+                image_size = 16
+                data = np.reshape(data_input, [-1, image_size, image_size, 1])
                 data = np.divide(data, 255.)
-                # noise = np.random.normal(loc=0.5, scale=0.5, size=data.shape)
-                # data += noise
-                # data = np.clip(data, 0., 1.)
             else:
                 data = data_input.reshape((data_input.shape[0], -1))
                 data = np.divide(data, 255.)
-            print("Loading CIFAR10 dataset: {}".format(data.shape))
-            return data, data_labels.reshape(-1)
+            print("Loading USPS dataset: {}".format(data.shape))
 
+        return data, data_labels
 
-            # if os.path.exists(data_path):
-            #     return np.load(data_path), labels
-
-            #     features = np.zeros((labels.shape[0], 4096))
-            #     for r in range(6):
-            #         idx = range(r * 10000, (r + 1) * 10000)
-            #         features[idx] = vgg16_features(data[idx])
-
-            #     features = MinMaxScaler().fit_transform(features)
-            #     np.save('./data/cifar10/{}_features.npy'.format(mode))
-            #     return features, labels
-            #
     else:
         return None
