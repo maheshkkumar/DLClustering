@@ -32,7 +32,7 @@ class DAE():
     def __init__(self):
         self.data_initialization = glorot_uniform(seed=1)
 
-    def ae(self, input_shape, latent_dimension, kernel_size, layers, activation='relu', with_attention=False):
+    def ae(self, input_shape, latent_dimension, kernel_size, layers, activation='relu', with_attention=False, dataset='mnist'):
 
         print("Layers: {}".format(layers))
 
@@ -76,9 +76,14 @@ class DAE():
                                                      activation=activation,
                                                      padding='same')(decoder_representation)
 
-        decoder_representation = Conv2DTranspose(filters=1,
-                                                 kernel_size=kernel_size,
-                                                 padding='same')(decoder_representation)
+        if dataset in ["mnist", "fmnist"]:
+            decoder_representation = Conv2DTranspose(filters=1,
+                                                     kernel_size=kernel_size,
+                                                     padding='same')(decoder_representation)
+        else:
+            decoder_representation = Conv2DTranspose(filters=3,
+                                                     kernel_size=kernel_size,
+                                                     padding='same')(decoder_representation)
 
         dae_output = Activation('sigmoid', name='decoder_output')(decoder_representation)
 
@@ -196,15 +201,16 @@ class ClusteringNetwork(object):
         self.output_directory = kwargs['output_directory']
         self.results_directory = os.path.join(self.output_directory,
                                               datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+        self.input_shape = (28, 28, 1) if self.dataset in ["mnist", "fmnist"] else [32, 32, 3]
 
         if self.ae_mode == 'ae':
             self.auto_encoder, self.encoder = AutoEncoder().ae(self.dimensions, with_attention=self.with_attention)
             model_input, model_output = self.encoder.input, CustomCluster(self.num_clusters, name='custom_clusters')(
                 self.encoder.output)
         else:
-            self.auto_encoder, self.encoder = DAE().ae(layers=self.dimensions, input_shape=(28, 28, 1), kernel_size=3,
+            self.auto_encoder, self.encoder = DAE().ae(layers=self.dimensions, input_shape=self.input_shape, kernel_size=3,
                                                        latent_dimension=self.num_clusters,
-                                                       with_attention=self.with_attention)
+                                                       with_attention=self.with_attention, dataset=self.dataset)
             model_input, model_output = self.encoder.get_input_at(0), CustomCluster(self.num_clusters,
                                                                                     name="custom_clusters")(
                 self.encoder.get_output_at(0))

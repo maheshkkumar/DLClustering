@@ -5,7 +5,7 @@ import numpy as np
 from keras.initializers import VarianceScaling, glorot_uniform
 from keras.optimizers import SGD
 from tensorflow import set_random_seed
-
+from sklearn.decomposition import PCA
 from helpers.compute_accuracy import EvaluatePerformance
 from helpers.dataset import load_data
 from model import ClusteringNetwork
@@ -27,6 +27,12 @@ dataset_parameters = {
         'training_steps': 300,
         'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform', seed=1),
         'optimizer': SGD(lr=1, momentum=0.9)
+    },
+    'cifar10': {
+        'interval_updation': 150,
+        'training_steps': 500,
+        'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform', seed=1),
+        'optimizer': SGD(lr=0.1, momentum=0.9)
     },
     'stl': {
         'interval_updation': 30,
@@ -61,6 +67,11 @@ def train(args):
     temperature = 1.
 
     if ae_mode == "ae":
+        if train_input.shape[-1] > 1024:
+            print("Shape of training data before transformation: {}".format(train_input.shape))
+            train_input = PCA(n_components=728).fit_transform(train_input)
+            print("Shape of training data after transformation: {}".format(train_input.shape))
+
         dimensions = [train_input.shape[-1], 500, 500, 2000,
                       len(np.unique(train_labels))] if args.include_layer is None else [train_input.shape[-1], 500, 500,
                                                                                         2000, args.include_layer,
