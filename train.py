@@ -41,6 +41,12 @@ dataset_parameters = {
         'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform', seed=1),
         'optimizer': SGD(lr=0.1, momentum=0.9)
     },
+    'coil20': {
+        'interval_updation': 150,
+        'training_steps': 500,
+        'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform', seed=1),
+        'optimizer': SGD(lr=0.1, momentum=0.9)
+    },
     'stl': {
         'interval_updation': 30,
         'training_steps': 10,
@@ -118,7 +124,7 @@ if __name__ == '__main__':
     parser.add_argument('-il', '--include_layer', help="Include an additional layer in auto encoder", default=None,
                         type=int)
     parser.add_argument('-d', '--dataset', help="Name of the dataset",
-                        choices=['mnist', 'fmnist', 'stl', 'cifar10', 'usps'])
+                        choices=['mnist', 'fmnist', 'stl', 'cifar10', 'usps', 'coil20'])
     parser.add_argument('-bs', '--batch_size', help="Size of each batch", default=256, type=int)
     parser.add_argument('-att', '--attention', help="Attention for training", default=False, type=bool)
     parser.add_argument('-m', '--mode', help="Type of auto encoder model", choices=["ae", "dae"])

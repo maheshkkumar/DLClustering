@@ -116,4 +116,5 @@ results/
 /dlc
 
 # Junk
-datasets/.DS_Store
+/.DS_Store
+

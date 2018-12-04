@@ -1,5 +1,4 @@
 import csv
-import datetime
 import os
 
 import keras.backend as K
@@ -199,13 +198,15 @@ class ClusteringNetwork(object):
         self.ae_mode = kwargs['ae_mode']
         self.data_initialization = kwargs['data_initialization']
         self.output_directory = kwargs['output_directory']
-        self.results_directory = os.path.join(self.output_directory,
-                                              datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+        folder_count = len(os.listdir(os.path.join(self.output_directory, self.dataset)))
+        self.results_directory = os.path.join(self.output_directory, self.dataset,
+                                              'version_{}'.format(folder_count + 1))
         self.input_shapes = {
             'mnist': [28, 28, 1],
             'fmnist': [28, 28, 1],
             'cifar10': [32, 32, 1],
-            'usps': [16, 16, 1]
+            'usps': [16, 16, 1],
+            'coil20': [128, 128, 3]
         }
         self.input_shape = self.input_shapes[self.dataset]
 
@@ -275,7 +276,7 @@ class ClusteringNetwork(object):
         check_directory(cluster_path)
         log_file = os.path.join(cluster_path, 'result.csv')
 
-        print("Interval Updation: {}".format(interval_updation))
+        print("Interval Updating: {}".format(interval_updation))
         interval_limit = int(data.shape[0] / batch_size) * 5
         print("Saving interval: {}".format(interval_limit))
 

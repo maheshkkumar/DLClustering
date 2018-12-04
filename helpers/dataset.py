@@ -1,9 +1,12 @@
+import exceptions
+import os
+from glob import glob
 import h5py
 import numpy as np
 from keras.applications.vgg16 import preprocess_input, VGG16
 from keras.datasets import mnist, fashion_mnist, cifar10
 from keras.models import Model
-from keras.preprocessing.image import img_to_array, array_to_img
+from keras.preprocessing.image import img_to_array, array_to_img, load_img
 from tensorflow import set_random_seed
 
 # seeding values for reproducability
@@ -12,6 +15,7 @@ set_random_seed(1)
 
 # USPS data path
 USPS_PATH = './datasets/usps/usps.h5'
+COIL20_PATH = './datasets/coil20/coil20'
 
 
 def preprocess_image(img):
@@ -118,6 +122,28 @@ def load_data(dataset, mode='ae'):
             print("Loading USPS dataset: {}".format(data.shape))
 
         return data, data_labels
+
+    elif dataset == 'coil20':
+        try:
+            images = sorted(glob(COIL20_PATH + '/*.png'))
+            data_input, data_labels = [], []
+            for img in images:
+                img_label = int(img.split('obj')[-1].split('__')[0])
+                image = img_to_array(load_img(img))
+                data_input.append(image)
+                data_labels.append(img_label)
+            data_input = np.asarray(data_input).astype(np.float32)
+            data_labels = np.asarray(data_labels)
+            assert data_input.shape[0] == data_labels.shape[0]
+
+            if mode == 'ae':
+                data_input = np.reshape(data_input, (data_input.shape[0], -1))
+
+            print("Loading COIL20 Dataset: {}".format(data_input.shape))
+
+            return data_input, data_labels
+        except exceptions as e:
+            print("Exception: {}".format(e.message))
 
     else:
         return None
