@@ -206,7 +206,7 @@ class ClusteringNetwork(object):
         self.input_shapes = {
             'mnist': [28, 28, 1],
             'fmnist': [28, 28, 1],
-            'cifar10': [32, 32, 1],
+            'cifar10': [32, 32, 3],
             'usps': [16, 16, 1],
             'coil20': [128, 128, 3]
         }
