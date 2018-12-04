@@ -118,3 +118,5 @@ results/
 # Junk
 /.DS_Store
 
+# Dataset
+/coil20

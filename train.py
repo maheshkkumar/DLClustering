@@ -20,32 +20,27 @@ dataset_parameters = {
     'mnist': {
         'interval_updation': 150,
         'training_steps': 300,
-        'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform', seed=1),
-        'optimizer': SGD(lr=1, momentum=0.9)
+        'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform', seed=1)
     },
     'fmnist': {
         'interval_updation': 150,
         'training_steps': 300,
-        'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform', seed=1),
-        'optimizer': SGD(lr=1, momentum=0.9)
+        'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform', seed=1)
     },
     'usps': {
         'interval_updation': 150,
         'training_steps': 300,
-        'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform', seed=1),
-        'optimizer': SGD(lr=0.1, momentum=0.9)
+        'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform', seed=1)
     },
     'cifar10': {
         'interval_updation': 150,
         'training_steps': 500,
-        'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform', seed=1),
-        'optimizer': SGD(lr=0.1, momentum=0.9)
+        'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform', seed=1)
     },
     'coil20': {
         'interval_updation': 150,
         'training_steps': 500,
-        'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform', seed=1),
-        'optimizer': SGD(lr=0.1, momentum=0.9)
+        'data_initialization': VarianceScaling(scale=(1. / 3.), mode='fan_in', distribution='uniform', seed=1)
     },
     'stl': {
         'interval_updation': 30,
@@ -62,7 +57,7 @@ def train(args):
     clustering layer in the convolutional neural network.
 
     Args:
-        param1 (args): Command line parameters from argparse
+        args: Command line parameters from argparse
 
     Returns:
         None
@@ -73,11 +68,11 @@ def train(args):
     train_input, train_labels = load_data(dataset, mode=ae_mode)
     num_clusters = len(np.unique(train_labels))
     data_initialization = dataset_parameters[dataset]['data_initialization']
-    auto_encoder_optimzer = dataset_parameters[dataset]['optimizer']
     with_attention = args.attention
     interval_updation = dataset_parameters[dataset][
         'interval_updation'] if args.interval_updation is None else args.interval_updation
     temperature = 1.
+    auto_encoder_optimizer = SGD(lr=args.learning_rate, momentum=0.9)
 
     if ae_mode == "ae":
         if train_input.shape[-1] > 1024:
@@ -101,7 +96,7 @@ def train(args):
     else:
         model.train_auto_encoder(data=train_input, labels=train_labels, train_steps=args.ae_iterations,
                                  batch_size=args.batch_size, output_directory=args.output_directory,
-                                 optimizer=auto_encoder_optimzer)
+                                 optimizer=auto_encoder_optimizer)
 
     model.model.summary()
 
@@ -140,6 +135,7 @@ if __name__ == '__main__':
     parser.add_argument('-od', '--output_directory',
                         help="Path of the output directory to store the results and training models",
                         default="./results")
+    parser.add_argument('-lr', '--learning_rate', help="Learning rate for the experiment", default=None, type=float)
     args = parser.parse_args()
 
     train(args)

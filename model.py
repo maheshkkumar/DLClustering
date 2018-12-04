@@ -197,10 +197,12 @@ class ClusteringNetwork(object):
         self.with_attention = kwargs['with_attention']
         self.ae_mode = kwargs['ae_mode']
         self.data_initialization = kwargs['data_initialization']
-        self.output_directory = kwargs['output_directory']
-        folder_count = len(os.listdir(os.path.join(self.output_directory, self.dataset)))
-        self.results_directory = os.path.join(self.output_directory, self.dataset,
-                                              'version_{}'.format(folder_count + 1))
+        self.output_directory = os.path.join(kwargs['output_directory'], self.dataset)
+
+        check_directory(self.output_directory)
+        folder_count = len(os.listdir(self.output_directory))
+
+        self.results_directory = os.path.join(self.output_directory, 'version_{}'.format(folder_count + 1))
         self.input_shapes = {
             'mnist': [28, 28, 1],
             'fmnist': [28, 28, 1],
