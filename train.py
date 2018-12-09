@@ -131,7 +131,7 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--mode', help="Type of auto encoder model", choices=["ae", "cae"])
     parser.add_argument('-citer', '--cluster_iterations', help="Number of training iterations for the cluster network",
                         default=15000, type=int)
-    parser.add_argument('-aiter', '--ae_iterations', help="Number of training iterations for auto encoder",
+    parser.add_argument('-aiter', '--ae_iterations', help="Number of training iterations for autoencoder",
                         default=300, type=int)
     parser.add_argument('-iu', '--interval_updation', help="Saving model once the interval limit is reached",
                         default=140, type=int)

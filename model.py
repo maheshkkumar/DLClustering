@@ -99,10 +99,10 @@ class CAE():
                                                      kernel_size=kernel_size,
                                                      padding='same')(decoder_representation)
 
-        dae_output = Activation('sigmoid', name='decoder_output')(decoder_representation)
+        cae_output = Activation('sigmoid', name='decoder_output')(decoder_representation)
 
         # Instantiate Decoder Model
-        decoder = Model(decoder_initial_representation, dae_output, name='decoder')
+        decoder = Model(decoder_initial_representation, cae_output, name='decoder')
         decoder.summary()
 
         # Autoencoder = Encoder + Decoder

@@ -44,9 +44,8 @@ Move the downloaded pre-trained autoencoder models to `models` folder.
 ### Parameters to run the script
 1. Run `train.py -h` to know the additional command line parameters.
 
-        usage: train.py [-h] [-il INCLUDE_LAYER]
-                [-d {mnist,fmnist,stl,cifar10,usps,coil20}] [-bs BATCH_SIZE]
-                [-att ATTENTION] [-m {ae,dae}] [-citer CLUSTER_ITERATIONS]
+        usage: train.py [-h] [-il INCLUDE_LAYER] [-d {mnist,fmnist}] [-bs BATCH_SIZE]
+                [-att ATTENTION] [-m {ae,cae}] [-citer CLUSTER_ITERATIONS]
                 [-aiter AE_ITERATIONS] [-iu INTERVAL_UPDATION]
                 [-tt TOLERANCE_THRESHOLD] [-aew AE_WEIGHTS]
                 [-od OUTPUT_DIRECTORY] [-lr LEARNING_RATE]
@@ -55,18 +54,18 @@ Move the downloaded pre-trained autoencoder models to `models` folder.
           -h, --help            show this help message and exit
           -il INCLUDE_LAYER, --include_layer INCLUDE_LAYER
                                 Include an additional layer in auto encoder
-          -d {mnist,fmnist,stl,cifar10,usps,coil20}, --dataset {mnist,fmnist,stl,cifar10,usps,coil20}
+          -d {mnist,fmnist}, --dataset {mnist,fmnist}
                                 Name of the dataset
           -bs BATCH_SIZE, --batch_size BATCH_SIZE
                                 Size of each batch
           -att ATTENTION, --attention ATTENTION
                                 Attention for training
-          -m {ae,dae}, --mode {ae,dae}
+          -m {ae,cae}, --mode {ae,cae}
                                 Type of auto encoder model
           -citer CLUSTER_ITERATIONS, --cluster_iterations CLUSTER_ITERATIONS
                                 Number of training iterations for the cluster network
           -aiter AE_ITERATIONS, --ae_iterations AE_ITERATIONS
-                                Number of training iterations for auto encoder
+                                Number of training iterations for autoencoder
           -iu INTERVAL_UPDATION, --interval_updation INTERVAL_UPDATION
                                 Saving model once the interval limit is reached
           -tt TOLERANCE_THRESHOLD, --tolerance_threshold TOLERANCE_THRESHOLD
@@ -90,7 +89,32 @@ The script stops on either completing the specified clustering iterations or upo
 
 ### Visualising the results of clustering
 
+Optimal parameters for the visualization script.
+
+        usage: visualize_results.py [-h] [-r {tsne,barchart,scatterplot}]
+                            [-m {ae,dae}] [-d {mnist,fmnist}] -aew AE_WEIGHTS
+                            [-att ATTENTION] [-iu INTERVAL_UPDATION]
+                            [-od OUTPUT_DIRECTORY]
+
+        optional arguments:
+          -h, --help            show this help message and exit
+          -r {tsne,barchart,scatterplot}, --result {tsne,barchart,scatterplot}
+                                Type of the result visualization and generation
+          -m {ae,dae}, --model {ae,dae}
+                                Type of the model to be loaded to generate the results
+          -d {mnist,fmnist}, --dataset {mnist,fmnist}
+                                Choice of the dataset
+          -aew AE_WEIGHTS, --ae_weights AE_WEIGHTS
+                                Path of the pre-trained auto-encoder weights
+          -att ATTENTION, --attention ATTENTION
+                                Attention required for training
+          -iu INTERVAL_UPDATION, --interval_updation INTERVAL_UPDATION
+                                Interval to update the cluster centroid
+          -od OUTPUT_DIRECTORY, --output_directory OUTPUT_DIRECTORY
+                                Path of the output directory to store the results and
+                                training models
+
 To visualize the clusters, run the following commands:
 
-1. MNIST: `python visualize.py -d mnist -m dae -aew ./models/mnist_ae_model.h5`
-1. Fashion-MNIST: `python visualize.py -d fmnist -m dae -aew ./models/mnist_ae_model.h5`
+1. MNIST: `python visualize_results.py -d mnist -m dae -aew ./models/mnist_ae_model.h5`
+1. Fashion-MNIST: `python visualize_results.py -d fmnist -m dae -aew ./models/mnist_ae_model.h5`
