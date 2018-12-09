@@ -31,6 +31,10 @@ dataset_parameters = {
 
 
 class GenerateResults(object):
+    """
+    Implementation to generate results from the encoder part of autoencoder.
+    """
+
     def __init__(self, args):
         self.result = args.result
         self.ae_mode = args.model
@@ -77,6 +81,7 @@ class GenerateResults(object):
         print("Type of result variable: {}".format(type(result)))
         print("Shape of result variable: {}".format(result.shape))
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
@@ -87,7 +92,8 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--dataset', help="Choice of the dataset", choices=['mnist', 'fmnist'])
     parser.add_argument('-aew', '--ae_weights', help="Path of the pre-trained auto-encoder weights", required=True)
     parser.add_argument('-att', '--attention', help="Attention required for training", default=False)
-    parser.add_argument('-iu', '--interval_updation', help="Interval to update the cluster centroid", default=140, type=int)
+    parser.add_argument('-iu', '--interval_updation', help="Interval to update the cluster centroid", default=140,
+                        type=int)
     parser.add_argument('-od', '--output_directory',
                         help="Path of the output directory to store the results and training models",
                         default="./results/visuals")

@@ -1,6 +1,6 @@
 import exceptions
-import os
 from glob import glob
+
 import h5py
 import numpy as np
 from keras.applications.vgg16 import preprocess_input, VGG16
@@ -9,7 +9,7 @@ from keras.models import Model
 from keras.preprocessing.image import img_to_array, array_to_img, load_img
 from tensorflow import set_random_seed
 
-# seeding values for reproducability
+# seeding values for reproducibility
 np.random.seed(1)
 set_random_seed(1)
 
@@ -19,12 +19,16 @@ COIL20_PATH = './datasets/coil20/coil20'
 
 
 def preprocess_image(img):
+    """Module to preprocess an image
+    """
     img = array_to_img(img, scale=False).resize((224, 224))
     img = img_to_array(img)
     return img
 
 
 def vgg16_features(data):
+    """Module to extract features from VGG16 network
+    """
     model = VGG16(include_top=True, weights='imagenet', input_shape=(224, 224, 3))
     features_model = Model(model.input, model.get_layer('fc1').output)
     data = np.asarray([preprocess_image(image) for image in data])
@@ -35,21 +39,17 @@ def vgg16_features(data):
 
 
 def load_data(dataset, mode='ae'):
-    """
-    A method to load the dataset for training
+    """Module to load the dataset for training mlp or cnn autoencoder
     """
     if dataset == 'mnist':
         (train_input, train_labels), (test_input, test_labels) = mnist.load_data()
         data_input = np.concatenate((train_input, test_input))
         data_labels = np.concatenate((train_labels, test_labels))
 
-        if mode == 'dae':
+        if mode == 'cae':
             image_size = data_input.shape[1]
             data = np.reshape(data_input, [-1, image_size, image_size, 1])
             data = np.divide(data, 255.)
-            # noise = np.random.normal(loc=0.5, scale=0.5, size=data.shape)
-            # data += noise
-            # data = np.clip(data, 0., 1.)
         else:
             data = data_input.reshape((data_input.shape[0], -1))
             data = np.divide(data, 255.)
@@ -61,7 +61,7 @@ def load_data(dataset, mode='ae'):
         data_input = np.concatenate((train_input, test_input))
         data_labels = np.concatenate((train_labels, test_labels))
 
-        if mode == 'dae':
+        if mode == 'cae':
             image_size = data_input.shape[1]
             data = np.reshape(data_input, [-1, image_size, image_size, 1])
             data = np.divide(data, 255.)
@@ -77,7 +77,7 @@ def load_data(dataset, mode='ae'):
         data_input = np.concatenate((train_input, test_input))
         data_labels = np.concatenate((train_labels, test_labels))
 
-        if mode == 'dae':
+        if mode == 'cae':
             image_size = data_input.shape[1]
             data = np.reshape(data_input, [-1, image_size, image_size, 3])
             data = np.divide(data, 255.)
@@ -86,18 +86,6 @@ def load_data(dataset, mode='ae'):
             data = np.divide(data, 255.)
         print("Loading CIFAR10 dataset: {}".format(data.shape))
         return data, data_labels.reshape(-1)
-
-        # if os.path.exists(data_path):
-        #     return np.load(data_path), labels
-
-        #     features = np.zeros((labels.shape[0], 4096))
-        #     for r in range(6):
-        #         idx = range(r * 10000, (r + 1) * 10000)
-        #         features[idx] = vgg16_features(data[idx])
-
-        #     features = MinMaxScaler().fit_transform(features)
-        #     np.save('./data/cifar10/{}_features.npy'.format(mode))
-        #     return features, labels
 
     elif dataset == 'usps':
         with h5py.File(USPS_PATH, 'r') as hf:
@@ -111,7 +99,7 @@ def load_data(dataset, mode='ae'):
             data_input = np.concatenate((train_input, test_input))
             data_labels = np.concatenate((train_labels, test_labels))
 
-            if mode == 'dae':
+            if mode == 'cae':
                 print("Shape of USPS dataset: {}".format(data_input.shape))
                 image_size = 16
                 data = np.reshape(data_input, [-1, image_size, image_size, 1])

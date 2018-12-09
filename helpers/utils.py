@@ -1,10 +1,8 @@
 import os
 
+
 def check_directory(path):
-    """
-    A method to create the directory, if it does not exists.
-    :param path: String
-    :return:
+    """Module to perform sanity check on existence of a folder.
     """
     if not os.path.exists(path):
         os.makedirs(path)

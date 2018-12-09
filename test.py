@@ -1,16 +1,14 @@
 import argparse
-import time
 
 import numpy as np
 from keras.initializers import VarianceScaling
 from keras.optimizers import SGD
-from tensorflow import set_random_seed
-from keras.models import Model
-from helpers.compute_accuracy import EvaluatePerformance
-from helpers.dataset import load_data
-from model import ClusteringNetwork, CustomCluster, AutoEncoder
 from sklearn.cluster import KMeans
-from sklearn.metrics import normalized_mutual_info_score, adjusted_rand_score
+from sklearn.metrics import normalized_mutual_info_score
+from tensorflow import set_random_seed
+
+from helpers.dataset import load_data
+from model import ClusteringNetwork
 
 # seeding values for reproducability
 np.random.seed(1)
@@ -76,7 +74,6 @@ def train(args):
     print("NMI: {}".format(normalized_mutual_info_score(test_p_labels, test_labels)))
     # print("P Labels shape: {}".format(p_labels.shape))
     # print("P Labels: {}".format(p_labels))
-
 
 
 if __name__ == '__main__':

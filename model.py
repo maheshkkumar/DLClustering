@@ -1,3 +1,9 @@
+#! /usr/bin/env python
+
+"""
+The :mod:`model` module implements the training of autoencoder and clustering for deep latent feature clustering.
+"""
+
 import csv
 import os
 
@@ -27,7 +33,15 @@ np.random.seed(1)
 set_random_seed(1)
 
 
-class DAE():
+class CAE():
+    """Pipeline to implement the autoencoder based on convolutional neural network.
+
+    Sequentially implements an encoder and a decoder to learn the latent features in the input data.
+
+    Encoder: Transforms data from the high dimensional input space to a lower dimensional latent space.
+    Decoder: Reconstructs the input data from the latent features
+    """
+
     def __init__(self):
         self.data_initialization = glorot_uniform(seed=1)
 
@@ -99,8 +113,12 @@ class DAE():
 
 
 class AutoEncoder():
-    """
-    Class to implement the model architecture
+    """Pipeline to implement the autoencoder based on multilayer perceptron.
+
+    Sequentially implements an encoder and a decoder to learn the latent features in the input data.
+
+    Encoder: Transforms data from the high dimensional input space to a lower dimensional latent space.
+    Decoder: Reconstructs the input data from the latent features
     """
 
     def __init__(self):
@@ -147,7 +165,7 @@ class AutoEncoder():
 
 class CustomCluster(Layer):
     """
-    Class for custom clustering layer for grouping the features using soft labels.
+    Implements a custom layer to cluster the latent features from the encoder.
     """
 
     def __init__(self, num_clusters, weights=None, temperature=1.0, **kwargs):
@@ -186,6 +204,10 @@ class CustomCluster(Layer):
 
 
 class ClusteringNetwork(object):
+    """
+    Pipleline to train the complete architecture (autoencoder + clustering)
+    """
+
     def __init__(self, **kwargs):
         super(ClusteringNetwork, self).__init__()
 
@@ -217,7 +239,7 @@ class ClusteringNetwork(object):
             model_input, model_output = self.encoder.input, CustomCluster(self.num_clusters, name='custom_clusters')(
                 self.encoder.output)
         else:
-            self.auto_encoder, self.encoder = DAE().ae(layers=self.dimensions, input_shape=self.input_shape,
+            self.auto_encoder, self.encoder = CAE().ae(layers=self.dimensions, input_shape=self.input_shape,
                                                        kernel_size=3,
                                                        latent_dimension=self.num_clusters,
                                                        with_attention=self.with_attention, dataset=self.dataset)
@@ -226,8 +248,7 @@ class ClusteringNetwork(object):
                 self.encoder.get_output_at(0))
         self.model = Model(inputs=model_input, outputs=model_output)
 
-    def train_auto_encoder(self, data, labels=None, loss='mse', optimizer='adam', train_steps=200, batch_size=256,
-                           output_directory="./results/ae"):
+    def train_auto_encoder(self, data, labels=None, loss='mse', optimizer='adam', train_steps=200, batch_size=256):
 
         check_directory(self.results_directory)
 

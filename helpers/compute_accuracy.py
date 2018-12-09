@@ -12,6 +12,9 @@ set_random_seed(1)
 
 
 class EvaluatePerformance(object):
+    """Implementation to evaluate the performance of the network with respect to the predicted labels.
+    """
+
     def __init__(self):
         pass
 
@@ -34,6 +37,9 @@ class EvaluatePerformance(object):
 
 
 class ComputeAccuracyCallback(Callback):
+    """Implementation to compute accuracy by inheriting callback module.
+    """
+
     def __init__(self, data, labels, model, mode='ae'):
         self.data = data
         self.labels = labels

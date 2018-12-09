@@ -1,3 +1,9 @@
+#! /usr/bin/env python
+
+"""
+The :mod:`train` module implements training pipeline for deep latent feature clustering.
+"""
+
 import argparse
 import time
 
@@ -52,8 +58,8 @@ dataset_parameters = {
 
 
 def train(args):
-    """This method trains the clustering network from scratch if there is no pre-trained auto-encoder, else it will load
-    the existing pre-trained auto-encoder to retrieve the latent representation of the images to train the final
+    """This method trains the clustering network from scratch if there is no pre-trained autoencoder, else it will load
+    the existing pre-trained autoencoder to retrieve the latent representation of the images to train the final
     clustering layer in the convolutional neural network.
 
     Args:
@@ -119,10 +125,10 @@ if __name__ == '__main__':
     parser.add_argument('-il', '--include_layer', help="Include an additional layer in auto encoder", default=None,
                         type=int)
     parser.add_argument('-d', '--dataset', help="Name of the dataset",
-                        choices=['mnist', 'fmnist', 'stl', 'cifar10', 'usps', 'coil20'])
+                        choices=['mnist', 'fmnist'])
     parser.add_argument('-bs', '--batch_size', help="Size of each batch", default=256, type=int)
     parser.add_argument('-att', '--attention', help="Attention for training", default=False, type=bool)
-    parser.add_argument('-m', '--mode', help="Type of auto encoder model", choices=["ae", "dae"])
+    parser.add_argument('-m', '--mode', help="Type of auto encoder model", choices=["ae", "cae"])
     parser.add_argument('-citer', '--cluster_iterations', help="Number of training iterations for the cluster network",
                         default=15000, type=int)
     parser.add_argument('-aiter', '--ae_iterations', help="Number of training iterations for auto encoder",
@@ -131,7 +137,7 @@ if __name__ == '__main__':
                         default=140, type=int)
     parser.add_argument('-tt', '--tolerance_threshold', help="Tolerance threshold to train the cluster network",
                         default=0.001, type=float)
-    parser.add_argument('-aew', '--ae_weights', help="Weights of pre-trained auto-encoder", default=None)
+    parser.add_argument('-aew', '--ae_weights', help="Weights of pre-trained autoencoder", default=None)
     parser.add_argument('-od', '--output_directory',
                         help="Path of the output directory to store the results and training models",
                         default="./results")
