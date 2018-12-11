@@ -28,18 +28,20 @@ This code implements the unsupervised learning mechanism using Convolutional Neu
 
 The following datasets were used for evaluating the proposed approach for deep latent feature unsupervised learning.
 
-  1. MNIST - [Download](https://www.google.com)
-  2. Fashion-MNIST - [Download](https://www.google.com)
+  1. **MNIST** - [Download](https://www.google.com)
+  2. **Fashion-MNIST** - [Download](https://www.google.com)
   
  `Note: The above mentioned datasets are included in Keras framework. The hyperlinks can be visited to infer additional 
  information about the datasets`
 
 ### Pre-trained models
-The pre-trained autoencoder models can be downloaded from the hyperlinks displayed below:
-  1. MNIST - [Download](https://www.google.com)
-  2. Fashion-MNIST - [Download](https://www.google.com)
-  
-Move the downloaded pre-trained autoencoder models to `models` folder.
+The pre-trained **autoencoder** models can be downloaded from the hyperlinks displayed below and move the downloaded files to **models** folder.
+  1. **MNIST** - 
+        2. Without Attention: [Download](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EceSCpccTq5CkspsnNNnHDkBo-fsuiucIm6f01BSllZWTw?e=SVDpio)
+        3. With Attention: [Download](https://www.google.com)
+  2. **Fashion-MNIST** - 
+        2. Without Attention: [Download](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EX0Ypue_XuFMtgMhnv3i3eoBC_WvoJ1ScxfhyDpX5IC-Gg?e=XAIHEW)
+        3. With Attention: [Download](https://www.google.com)
 
 ### Parameters to run the script
 1. Run `train.py -h` to know the additional command line parameters.
@@ -82,8 +84,12 @@ Move the downloaded pre-trained autoencoder models to `models` folder.
 
 Use the downloaded pre-trained autoencoder to start the clustering task.
 
-1. MNIST: `python train.py -d mnist -m dae -aiter 500 -citer 20000 -aew ./models/mnist_ae_model.h5 -lr 1`
-1. Fashion-MNIST: `python train.py -d fmnist -m dae -aiter 500 -citer 20000 -aew ./models/mnist_ae_model.h5 -lr 1`
+1. **MNIST**: 
+    1. Without Attention: `python train.py -d mnist -m dae -aiter 500 -citer 20000 -aew ./models/mnist_ae_without_attention.h5 -lr 1`
+    2. With Attention: `python train.py -d mnist -m dae -aiter 500 -citer 20000 -aew ./models/mnist_ae_with_attention.h5 -lr 0.1`
+1. **Fashion-MNIST**: 
+    1. Without Attention: `python train.py -d fmnist -m dae -aiter 500 -citer 20000 -aew ./models/mnist_ae_without_attention.h5 -lr 1`
+    2. With Attention: `python train.py -d fmnist -m dae -aiter 500 -citer 20000 -aew ./models/mnist_ae_with_attention.h5 -lr 0.1`
 
 The script stops on either completing the specified clustering iterations or upon reaching the tolerance level.
 
