@@ -37,14 +37,16 @@ The following datasets were used for evaluating the proposed approach for deep l
 ### Pre-trained models
 The pre-trained **autoencoder** models can be downloaded from the hyperlinks displayed below and move the downloaded files to **models** folder.
   1. **MNIST** - 
-        2. Without Attention: [Download](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EceSCpccTq5CkspsnNNnHDkBo-fsuiucIm6f01BSllZWTw?e=SVDpio)
-        3. With Attention: [Download](https://www.google.com)
+        2. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EWOwz7Vz6LNMn3G1qmAZsrIB2wvCJUEPRjB6BGnYNtYKLg?e=oiuVfu)
+        3. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/Ebxjxr8fkpFAgjFGzjbQa_UBvhMNKFQg-yvPypXqCkcURw?e=sPKcBc)
   2. **Fashion-MNIST** - 
-        2. Without Attention: [Download](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EX0Ypue_XuFMtgMhnv3i3eoBC_WvoJ1ScxfhyDpX5IC-Gg?e=XAIHEW)
-        3. With Attention: [Download](https://www.google.com)
+        2. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EZA2TS8CqTNFkFF8y8Uk1tMBivfSO6vy6qymWiQK-4JUuA?e=fnTvJu)
+        3. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EY8x_wrvKQJCrEGiShHC5g4BucaJLIa2ufpt5IPRO5ISTQ?e=xW5S93)
+
+Or download the entire models folder: [Download](https://myumanitoba-my.sharepoint.com/:f:/g/personal/kumarkm_myumanitoba_ca/EkTP90yiF0hBr0kl3qXlgAcBV7HWs5IblKJ5Y8s5m6nzbg?e=4G4UYk)
 
 ### Parameters to run the script
-1. Run `train.py -h` to know the additional command line parameters.
+1. Run ```train.py -h``` to know the additional command line parameters.
 
         usage: train.py [-h] [-il INCLUDE_LAYER] [-d {mnist,fmnist}] [-bs BATCH_SIZE]
                 [-att ATTENTION] [-m {ae,cae}] [-citer CLUSTER_ITERATIONS]
@@ -85,14 +87,27 @@ The pre-trained **autoencoder** models can be downloaded from the hyperlinks dis
 Use the downloaded pre-trained autoencoder to start the clustering task.
 
 1. **MNIST**: 
-    1. Without Attention: `python train.py -d mnist -m dae -aiter 500 -citer 20000 -aew ./models/mnist_ae_without_attention.h5 -lr 1`
-    2. With Attention: `python train.py -d mnist -m dae -aiter 500 -citer 20000 -aew ./models/mnist_ae_with_attention.h5 -lr 0.1`
+    1. Without Attention: 
+            ```
+            python train.py -d mnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist_ae_without_attention.h5 -lr 1
+            ```
+    2. With Attention: 
+            ```
+            python train.py -d mnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist_ae_with_attention.h5 -lr 0.1
+            ```
 1. **Fashion-MNIST**: 
-    1. Without Attention: `python train.py -d fmnist -m dae -aiter 500 -citer 20000 -aew ./models/mnist_ae_without_attention.h5 -lr 1`
-    2. With Attention: `python train.py -d fmnist -m dae -aiter 500 -citer 20000 -aew ./models/mnist_ae_with_attention.h5 -lr 0.1`
+    1. Without Attention: 
+            ```
+            python train.py -d fmnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist_ae_without_attention.h5 -lr 1
+            ```
+    2. With Attention: 
+            ```
+            python train.py -d fmnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist_ae_with_attention.h5 -lr 0.1
+            ```
 
 The script stops on either completing the specified clustering iterations or upon reaching the tolerance level.
 
+<!--
 ### Visualising the results of clustering
 
 Optimal parameters for the visualization script.
@@ -122,5 +137,6 @@ Optimal parameters for the visualization script.
 
 To visualize the clusters, run the following commands:
 
-1. MNIST: `python visualize_results.py -d mnist -m dae -aew ./models/mnist_ae_model.h5`
+1. MNIST: ```python visualize_results.py -d mnist -m dae -aew ./models/mnist_ae_model.h5```
 1. Fashion-MNIST: `python visualize_results.py -d fmnist -m dae -aew ./models/mnist_ae_model.h5`
+-->
