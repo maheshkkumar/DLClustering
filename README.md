@@ -15,35 +15,38 @@ This code implements the unsupervised learning mechanism using Convolutional Neu
 2. Setup the `python 2.7` environment (either using virtualenv or anaconda distribution)
     1. `Virtualenv`
         1. Create a new environment: `virtualenv -p ~/path/python2.7 project_name`
+        2. Activate the environment: `source ~/path_of_virtual_environment_folder/bin/activate`
+        3. For more information: [Virtual Environments](https://docs.python-guide.org/dev/virtualenvs/)
     2. `Conda`
-        1. Create a new environment: `conda create -n python=2.7 project_name`
-3. Activate the environment:
-    1. Windows: `source project_name/bin/activate`
-    2. Linux / Ubuntu: 
-        1. `source ~/.bashrc`
-        1. `source activate project_name`
-4. Install all the project dependencies `pip install -r requirements.txt`
+        1. Create a new environment: `conda create -n project_name python=2.7`
+        2. Activate the environment: 
+            1. `source ~/.bashrc`
+            2. `source activate project_name`
+        3. For more information: [Conda](https://conda.io/docs/user-guide/tasks/manage-environments.html)
+4. Install all the project dependencies `pip --no-cache-dir install -r requirements.txt`
 
 ### Datasets
 
 The following datasets were used for evaluating the proposed approach for deep latent feature unsupervised learning.
 
-  1. **MNIST** - [Download](https://www.google.com)
-  2. **Fashion-MNIST** - [Download](https://www.google.com)
+  1. [MNIST](http://yann.lecun.com/exdb/mnist/)
+  2. [Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist)
   
- `Note: The above mentioned datasets are included in Keras framework. The hyperlinks can be visited to infer additional 
+ `Note: The above mentioned datasets are included in the Keras framework. The hyperlinks can be visited to infer additional 
  information about the datasets`
 
 ### Pre-trained models
-The pre-trained **autoencoder** models can be downloaded from the hyperlinks displayed below and move the downloaded files to **models** folder.
+The pre-trained **autoencoder** models can be downloaded from the hyperlinks displayed below: 
   1. **MNIST** - 
         2. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EWOwz7Vz6LNMn3G1qmAZsrIB2wvCJUEPRjB6BGnYNtYKLg?e=oiuVfu)
-        3. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/Ebxjxr8fkpFAgjFGzjbQa_UBvhMNKFQg-yvPypXqCkcURw?e=sPKcBc)
+        3. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EYg434t4_JxPiUL7902AznYB_T0D9khzz8Mt9IKmwBYZNQ?e=7Ws4ej)
   2. **Fashion-MNIST** - 
-        2. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EZA2TS8CqTNFkFF8y8Uk1tMBivfSO6vy6qymWiQK-4JUuA?e=fnTvJu)
-        3. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EY8x_wrvKQJCrEGiShHC5g4BucaJLIa2ufpt5IPRO5ISTQ?e=xW5S93)
+        2. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/ESwX94u7VDhEiL1CpT9NQ4oB5sKXDx9rEyYScWhB6NiMEg?e=bKaAnA)
+        3. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EUWjRulHGv5AgFAkd9p6aY8BP3G1q8JIbFxJ_s5yvqZi-Q?e=5ZPodf)
 
-Or download the entire models folder: [Download](https://myumanitoba-my.sharepoint.com/:f:/g/personal/kumarkm_myumanitoba_ca/EkTP90yiF0hBr0kl3qXlgAcBV7HWs5IblKJ5Y8s5m6nzbg?e=4G4UYk)
+Or download the entire models folder: [Download](https://myumanitoba-my.sharepoint.com/:f:/g/personal/kumarkm_myumanitoba_ca/EiKq8S-DvrhOuywYlYwnUnYBXt-ofblSB7bXw8PzPpf4cg?e=zFY78p)
+
+**Note**: Place the downloaded weights to the **models** folder.
 
 ### Parameters to run the script
 1. Run ```train.py -h``` to know the additional command line parameters.
@@ -82,7 +85,7 @@ Or download the entire models folder: [Download](https://myumanitoba-my.sharepoi
           -lr LEARNING_RATE, --learning_rate LEARNING_RATE
                                 Learning rate for the experiment
                                 
-### Using a pre-trained autoencoder to train the clustering
+### Using a pre-trained autoencoder to train the clustering layer
 
 Use the downloaded pre-trained autoencoder to start the clustering task.
 
@@ -93,7 +96,7 @@ Use the downloaded pre-trained autoencoder to start the clustering task.
             ```
     2. With Attention: 
             ```
-            python train.py -d mnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist_ae_with_attention.h5 -lr 0.1
+            python train.py -d mnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist_ae_with_attention.h5 -lr 0.1 -att True
             ```
 1. **Fashion-MNIST**: 
     1. Without Attention: 
@@ -102,7 +105,7 @@ Use the downloaded pre-trained autoencoder to start the clustering task.
             ```
     2. With Attention: 
             ```
-            python train.py -d fmnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist_ae_with_attention.h5 -lr 0.1
+            python train.py -d fmnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist_ae_with_attention.h5 -lr 0.1 -att True
             ```
 
 The script stops on either completing the specified clustering iterations or upon reaching the tolerance level.
