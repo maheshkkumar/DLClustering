@@ -1,25 +1,23 @@
 ## Deep Latent Feature Clustering
 
-> The code for the project can be found on [GitHub](https://github.com/maheshkkumar/DLClustering).
+> **Note**: The code for the project can be found on [GitHub](https://github.com/maheshkkumar/DLClustering).
 
 A method to employ a neural network to learn the latent representation of the multimedia data (e.g., images) to better form the clusters in the lower dimensional clustering friendly space.
 
 This code implements the unsupervised learning mechanism using Convolutional Neural Network (ConvNet) as described in the paper. Additionally, this repository includes the following procedures: 
     
   1. Training the autoencoder.
-  2. Loading a pre-trained autoencoder to train the `k-means` cluster in the ConvNet.
-  3. Visualize the results using T-SNE method.
-    
+  2. Loading a pre-trained autoencoder to train the `k-means` cluster in the ConvNet.    
 
-### Steps to setup the project (requirements)
+### Setup the project environment
 
-1. Clone or download the repository.
+1. Clone or download the [repository](https://github.com/maheshkkumar/DLClustering).
 2. Setup the `python 2.7` environment (either using virtualenv or anaconda distribution)
-    1. `Virtualenv`
+    1. **Virtualenv**
         1. Create a new environment: `virtualenv -p ~/path/python2.7 project_name`
         2. Activate the environment: `source ~/path_of_virtual_environment_folder/bin/activate`
         3. For more information: [Virtual Environments](https://docs.python-guide.org/dev/virtualenvs/)
-    2. `Conda`
+    2. **Conda**
         1. Create a new environment: `conda create -n project_name python=2.7`
         2. Activate the environment: 
             1. `source ~/.bashrc`
@@ -34,21 +32,23 @@ The following datasets were used for evaluating the proposed approach for deep l
   1. [MNIST](http://yann.lecun.com/exdb/mnist/)
   2. [Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist)
   
- `Note: The above mentioned datasets are included in the Keras framework. The hyperlinks can be visited to infer additional 
- information about the datasets`
+ >**Note**: The above mentioned datasets are included in the **Keras** framework. The hyperlinks can be visited to infer additional 
+ information about the datasets
 
 ### Pre-trained models
 The pre-trained **autoencoder** model weights are present in the cloned repository or they can be downloaded from the hyperlinks shown below: 
-  1. **MNIST** - 
-        1. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EWOwz7Vz6LNMn3G1qmAZsrIB2wvCJUEPRjB6BGnYNtYKLg?e=oiuVfu)
-        2. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EYg434t4_JxPiUL7902AznYB_T0D9khzz8Mt9IKmwBYZNQ?e=7Ws4ej)
+  
+  1. **MNIST** -
+        1. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EYg434t4_JxPiUL7902AznYB_T0D9khzz8Mt9IKmwBYZNQ?e=vCYcLD)
+        2. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EYg-iXOPRW5Fp1ELn8VeSwUBnLc6MZKC22tlUxbpk9snTw?e=7UdIlb)
+  
   2. **Fashion-MNIST** - 
-        1. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/ESwX94u7VDhEiL1CpT9NQ4oB5sKXDx9rEyYScWhB6NiMEg?e=bKaAnA)
-        2. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EUWjRulHGv5AgFAkd9p6aY8BP3G1q8JIbFxJ_s5yvqZi-Q?e=5ZPodf)
+        1. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/ESwX94u7VDhEiL1CpT9NQ4oB5sKXDx9rEyYScWhB6NiMEg?e=xFofTz)
+        2. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EUWjRulHGv5AgFAkd9p6aY8BP3G1q8JIbFxJ_s5yvqZi-Q?e=bbUleZ)
 
 Or download the entire models folder: [Download](https://myumanitoba-my.sharepoint.com/:f:/g/personal/kumarkm_myumanitoba_ca/EiKq8S-DvrhOuywYlYwnUnYBXt-ofblSB7bXw8PzPpf4cg?e=zFY78p)
 
-**Note**: Place the downloaded weights to the **models** folder.
+> **Note**: Place the downloaded weights in the **models** folder.
 
 ### Parameters to run the script
 1. Run ```train.py -h``` to know the additional command line parameters.
@@ -92,20 +92,24 @@ Or download the entire models folder: [Download](https://myumanitoba-my.sharepoi
 Use the downloaded pre-trained autoencoder to start the clustering task.
 
 1. **MNIST**: 
-    1. Without Attention: 
+
+    1. **Without Attention**: 
             ```
             python train.py -d mnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist/mnist_ae_without_attention.h5 -lr 1
             ```
-    2. With Attention: 
+
+    2. **With Attention**: 
             ```
             python train.py -d mnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist/mnist_ae_with_attention.h5 -lr 0.1 -att True
             ```
-1. **Fashion-MNIST**: 
-    1. Without Attention: 
+2. **Fashion-MNIST**: 
+
+    1. **Without Attention**: 
             ```
             python train.py -d fmnist -m cae -aiter 500 -citer 20000 -aew ./models/fmnist/fmnist_ae_without_attention.h5 -lr 1
             ```
-    2. With Attention: 
+ 
+    2. **With Attention**: 
             ```
             python train.py -d fmnist -m cae -aiter 500 -citer 20000 -aew ./models/fmnist/fmnist_ae_with_attention.h5 -lr 0.1 -att True
             ```
