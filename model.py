@@ -169,7 +169,6 @@ class CustomCluster(Layer):
     """
 
     def __init__(self, num_clusters, weights=None, temperature=1.0, **kwargs):
-        # Might have to implement the dimension of the input image
         super(CustomCluster, self).__init__(**kwargs)
         self.data_initialization = glorot_uniform(seed=1)
         self.num_clusters = num_clusters

@@ -1,5 +1,7 @@
 ## Deep Latent Feature Clustering
 
+> The code for the project can be found on [GitHub](https://github.com/maheshkkumar/DLClustering).
+
 A method to employ a neural network to learn the latent representation of the multimedia data (e.g., images) to better form the clusters in the lower dimensional clustering friendly space.
 
 This code implements the unsupervised learning mechanism using Convolutional Neural Network (ConvNet) as described in the paper. Additionally, this repository includes the following procedures: 
@@ -108,8 +110,9 @@ Use the downloaded pre-trained autoencoder to start the clustering task.
             python train.py -d fmnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist_ae_with_attention.h5 -lr 0.1 -att True
             ```
 
-The script stops on either completing the specified clustering iterations or upon reaching the tolerance level.
+The training script stops on either completing the specified clustering iterations or upon reaching the tolerance level. The code to generate the plots are in **notebooks** folder.
 
+The code for clustering layer is borrowed from [DEC](https://github.com/fferroni/DEC-Keras).
 <!--
 ### Visualising the results of clustering
 
