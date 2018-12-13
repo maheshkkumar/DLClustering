@@ -38,11 +38,11 @@ The following datasets were used for evaluating the proposed approach for deep l
 ### Pre-trained models
 The pre-trained **autoencoder** model weights are present in the cloned repository or they can be downloaded from the hyperlinks shown below: 
   1. **MNIST** - 
-        2. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EWOwz7Vz6LNMn3G1qmAZsrIB2wvCJUEPRjB6BGnYNtYKLg?e=oiuVfu)
-        3. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EYg434t4_JxPiUL7902AznYB_T0D9khzz8Mt9IKmwBYZNQ?e=7Ws4ej)
+        1. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EWOwz7Vz6LNMn3G1qmAZsrIB2wvCJUEPRjB6BGnYNtYKLg?e=oiuVfu)
+        2. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EYg434t4_JxPiUL7902AznYB_T0D9khzz8Mt9IKmwBYZNQ?e=7Ws4ej)
   2. **Fashion-MNIST** - 
-        2. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/ESwX94u7VDhEiL1CpT9NQ4oB5sKXDx9rEyYScWhB6NiMEg?e=bKaAnA)
-        3. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EUWjRulHGv5AgFAkd9p6aY8BP3G1q8JIbFxJ_s5yvqZi-Q?e=5ZPodf)
+        1. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/ESwX94u7VDhEiL1CpT9NQ4oB5sKXDx9rEyYScWhB6NiMEg?e=bKaAnA)
+        2. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EUWjRulHGv5AgFAkd9p6aY8BP3G1q8JIbFxJ_s5yvqZi-Q?e=5ZPodf)
 
 Or download the entire models folder: [Download](https://myumanitoba-my.sharepoint.com/:f:/g/personal/kumarkm_myumanitoba_ca/EiKq8S-DvrhOuywYlYwnUnYBXt-ofblSB7bXw8PzPpf4cg?e=zFY78p)
 
