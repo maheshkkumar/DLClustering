@@ -38,13 +38,13 @@ The following datasets were used for evaluating the proposed approach for deep l
  information about the datasets`
 
 ### Pre-trained models
-The pre-trained **autoencoder** models can be downloaded from the hyperlinks displayed below: 
+The pre-trained **autoencoder** model weights are present in the cloned repository or they can be downloaded from the hyperlinks shown below: 
   1. **MNIST** - 
-        2. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EWOwz7Vz6LNMn3G1qmAZsrIB2wvCJUEPRjB6BGnYNtYKLg?e=oiuVfu)
-        3. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EYg434t4_JxPiUL7902AznYB_T0D9khzz8Mt9IKmwBYZNQ?e=7Ws4ej)
+        1. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EWOwz7Vz6LNMn3G1qmAZsrIB2wvCJUEPRjB6BGnYNtYKLg?e=oiuVfu)
+        2. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EYg434t4_JxPiUL7902AznYB_T0D9khzz8Mt9IKmwBYZNQ?e=7Ws4ej)
   2. **Fashion-MNIST** - 
-        2. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/ESwX94u7VDhEiL1CpT9NQ4oB5sKXDx9rEyYScWhB6NiMEg?e=bKaAnA)
-        3. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EUWjRulHGv5AgFAkd9p6aY8BP3G1q8JIbFxJ_s5yvqZi-Q?e=5ZPodf)
+        1. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/ESwX94u7VDhEiL1CpT9NQ4oB5sKXDx9rEyYScWhB6NiMEg?e=bKaAnA)
+        2. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EUWjRulHGv5AgFAkd9p6aY8BP3G1q8JIbFxJ_s5yvqZi-Q?e=5ZPodf)
 
 Or download the entire models folder: [Download](https://myumanitoba-my.sharepoint.com/:f:/g/personal/kumarkm_myumanitoba_ca/EiKq8S-DvrhOuywYlYwnUnYBXt-ofblSB7bXw8PzPpf4cg?e=zFY78p)
 
@@ -94,20 +94,20 @@ Use the downloaded pre-trained autoencoder to start the clustering task.
 1. **MNIST**: 
     1. Without Attention: 
             ```
-            python train.py -d mnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist_ae_without_attention.h5 -lr 1
+            python train.py -d mnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist/mnist_ae_without_attention.h5 -lr 1
             ```
     2. With Attention: 
             ```
-            python train.py -d mnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist_ae_with_attention.h5 -lr 0.1 -att True
+            python train.py -d mnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist/mnist_ae_with_attention.h5 -lr 0.1 -att True
             ```
 1. **Fashion-MNIST**: 
     1. Without Attention: 
             ```
-            python train.py -d fmnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist_ae_without_attention.h5 -lr 1
+            python train.py -d fmnist -m cae -aiter 500 -citer 20000 -aew ./models/fmnist/fmnist_ae_without_attention.h5 -lr 1
             ```
     2. With Attention: 
             ```
-            python train.py -d fmnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist_ae_with_attention.h5 -lr 0.1 -att True
+            python train.py -d fmnist -m cae -aiter 500 -citer 20000 -aew ./models/fmnist/fmnist_ae_with_attention.h5 -lr 0.1 -att True
             ```
 
 The training script stops on either completing the specified clustering iterations or upon reaching the tolerance level. The code to generate the plots are in **notebooks** folder.
@@ -143,6 +143,6 @@ Optimal parameters for the visualization script.
 
 To visualize the clusters, run the following commands:
 
-1. MNIST: ```python visualize_results.py -d mnist -m dae -aew ./models/mnist_ae_model.h5```
+1. MNIST: ```python visualize_results.py -d mnist -m dae -aew ./models/mnist/mnist_ae_model.h5```
 1. Fashion-MNIST: `python visualize_results.py -d fmnist -m dae -aew ./models/mnist_ae_model.h5`
 -->
