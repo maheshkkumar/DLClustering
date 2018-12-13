@@ -36,7 +36,7 @@ The following datasets were used for evaluating the proposed approach for deep l
  information about the datasets`
 
 ### Pre-trained models
-The pre-trained **autoencoder** models can be downloaded from the hyperlinks displayed below: 
+The pre-trained **autoencoder** model weights are present in the cloned repository or they can be downloaded from the hyperlinks shown below: 
   1. **MNIST** - 
         2. Without Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EWOwz7Vz6LNMn3G1qmAZsrIB2wvCJUEPRjB6BGnYNtYKLg?e=oiuVfu)
         3. With Attention: [Weights](https://myumanitoba-my.sharepoint.com/:u:/g/personal/kumarkm_myumanitoba_ca/EYg434t4_JxPiUL7902AznYB_T0D9khzz8Mt9IKmwBYZNQ?e=7Ws4ej)
@@ -92,20 +92,20 @@ Use the downloaded pre-trained autoencoder to start the clustering task.
 1. **MNIST**: 
     1. Without Attention: 
             ```
-            python train.py -d mnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist_ae_without_attention.h5 -lr 1
+            python train.py -d mnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist/mnist_ae_without_attention.h5 -lr 1
             ```
     2. With Attention: 
             ```
-            python train.py -d mnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist_ae_with_attention.h5 -lr 0.1 -att True
+            python train.py -d mnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist/mnist_ae_with_attention.h5 -lr 0.1 -att True
             ```
 1. **Fashion-MNIST**: 
     1. Without Attention: 
             ```
-            python train.py -d fmnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist_ae_without_attention.h5 -lr 1
+            python train.py -d fmnist -m cae -aiter 500 -citer 20000 -aew ./models/fmnist/fmnist_ae_without_attention.h5 -lr 1
             ```
     2. With Attention: 
             ```
-            python train.py -d fmnist -m cae -aiter 500 -citer 20000 -aew ./models/mnist_ae_with_attention.h5 -lr 0.1 -att True
+            python train.py -d fmnist -m cae -aiter 500 -citer 20000 -aew ./models/fmnist/fmnist_ae_with_attention.h5 -lr 0.1 -att True
             ```
 
 The script stops on either completing the specified clustering iterations or upon reaching the tolerance level.
@@ -140,6 +140,6 @@ Optimal parameters for the visualization script.
 
 To visualize the clusters, run the following commands:
 
-1. MNIST: ```python visualize_results.py -d mnist -m dae -aew ./models/mnist_ae_model.h5```
+1. MNIST: ```python visualize_results.py -d mnist -m dae -aew ./models/mnist/mnist_ae_model.h5```
 1. Fashion-MNIST: `python visualize_results.py -d fmnist -m dae -aew ./models/mnist_ae_model.h5`
 -->
