@@ -116,7 +116,7 @@ Use the downloaded pre-trained autoencoder to start the clustering task.
 
 The training script stops on either completing the specified clustering iterations or upon reaching the tolerance level. The code to generate the plots are in **notebooks** folder.
 
-The code for clustering layer is borrowed from [DEC](https://github.com/fferroni/DEC-Keras).
+**Note**: The code for few concepts are borrowed from [DEC-Keras](https://github.com/XifengGuo/DEC-keras).
 <!--
 ### Visualising the results of clustering
 
